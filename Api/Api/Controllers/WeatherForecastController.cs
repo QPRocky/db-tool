@@ -5,12 +5,12 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class WeatherForecastController(EfDbContext dbContext) : ControllerBase
+public class WeatherForecastController(/*EfDbContext dbContext*/) : ControllerBase
 {
     [HttpGet(Name = "GetWeatherForecast")]
     public async Task<IActionResult> GetWeatherForecast()
     {
-        var res = await dbContext.Transactions.ToListAsync();
-        return Ok(res);
+        //var res = await dbContext.Transactions.ToListAsync();
+        return Ok("jee111");
     }
 }

@@ -8,7 +8,7 @@ const Home = () => {
 
   useEffect(() => {
     axios
-      .get("https://localhost:7210/WeatherForecast")
+      .get("http://localhost:8080/WeatherForecast")
       .then((response) => {
         setData(response.data);
         console.log(response.data);
@@ -18,7 +18,7 @@ const Home = () => {
       });
   }, []);
 
-  return <p>kissa</p>;
+  return <p>jee222</p>;
 };
 
 export default Home;

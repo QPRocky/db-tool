@@ -12,7 +12,9 @@ public class EfDbContext: DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         // optionsBuilder.UseSqlServer(ConnectionString);
-        optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=SPAv2_master;Trusted_Connection=True;");
+        //optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=SPAv2_master;Trusted_Connection=True;");
+        optionsBuilder.UseSqlServer(@"Server=192.168.0.6,1433;Database=SPAv2_master;User Id=QPRocky;Password=Manager79;");
+        //optionsBuilder.UseSqlServer(@"Server=192.168.0.6,1433;Database=SPAv2_master;Trusted_Connection=True;");
     }
 
     public DbSet<Transaction> Transactions { get; set; }

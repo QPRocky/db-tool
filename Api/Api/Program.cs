@@ -9,7 +9,7 @@ ConfigurationManager configuration = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<EfDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+//builder.Services.AddDbContext<EfDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options =>
 {
