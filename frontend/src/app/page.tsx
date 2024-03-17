@@ -3,21 +3,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const Home = () => {
-  const [data, setData] = useState(null);
+const testConnection = 'https://localhost:7210/Database/testConnection';
+const search = 'https://localhost:7210/Database/search?searchQuery=kohde';
 
+const Home = () => {
   useEffect(() => {
     axios
       //.get("http://localhost:8080/WeatherForecast")
-      .get('https://localhost:7210/Database/TestConnection', {
+      .get(search, {
         headers: {
           ConnectionString:
-            'Server=(localdb)\\MSSQLLocalDB;Database=SPAv2_master;Trusted_Connection=True;',
+            //'Server=(localdb)\\MSSQLLocalDB;Database=SPAv2_master;Trusted_Connection=True;',
+            'Server=localhost;Database=YLVA;Trusted_Connection=True;',
         },
       })
       .then(response => {
-        setData(response.data);
-        console.log('jes!');
+        console.log(response.data);
       })
       .catch(error => {
         console.error(error);
