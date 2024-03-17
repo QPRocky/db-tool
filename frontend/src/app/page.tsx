@@ -4,13 +4,15 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const testConnection = 'https://localhost:7210/Database/testConnection';
-const search = 'https://localhost:7210/Database/search?searchQuery=kohde';
+const search1 = 'https://localhost:7210/Database/search?searchQuery=oHdE.k';
+const search2 = 'https://localhost:7210/Database/search?searchQuery=ohDe_i';
+const search3 = 'https://localhost:7210/Database/search?searchQuery=ura o';
 
 const Home = () => {
   useEffect(() => {
     axios
       //.get("http://localhost:8080/WeatherForecast")
-      .get(search, {
+      .get(search3, {
         headers: {
           ConnectionString:
             //'Server=(localdb)\\MSSQLLocalDB;Database=SPAv2_master;Trusted_Connection=True;',

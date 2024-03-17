@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using Dapper;
 using System.Data.Common;
+using System.Collections.Generic;
 
 namespace Api.Controllers;
 
@@ -12,16 +13,14 @@ namespace Api.Controllers;
 [Route("[controller]")]
 public class DatabaseController() : ControllerBase
 {
-    private string _connectionString;
-
     [HttpGet("TestConnection")]
     public async Task<IActionResult> TestConnection()
     {
         try
         {
-            GetConnectionStringFromHeader(Request);
+            var connectionString = GetConnectionStringFromHeader(Request);
 
-            using var connection = new SqlConnection(_connectionString);
+            using var connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             await connection.QuerySingleAsync<int>("SELECT 1");
 
@@ -38,19 +37,16 @@ public class DatabaseController() : ControllerBase
     {
         try
         {
-            GetConnectionStringFromHeader(Request);
+            var connectionString = GetConnectionStringFromHeader(Request);
 
-            var tables = await GetTables();
-            tables = await GetPrimaryKeys(tables);
-            tables = await GetForeignKeys(tables);
+            using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            var DataType = tables["Kohde.Kohde"].ColumnDetails["Kohde_ID"].DataType;
-            var IsPK = tables["Kohde.Kohde"].ColumnDetails["Kohde_ID"].IsPK;
-            var FKDetails = tables["Kohde.Kohde"].ColumnDetails["Kohde_ID"].FKDetails;
-
-            var DataType1 = tables["Kohde.Osio"].ColumnDetails["Kohde_ID"].DataType;
-            var IsPK1 = tables["Kohde.Osio"].ColumnDetails["Kohde_ID"].IsPK;
-            var FKDetails1 = tables["Kohde.Osio"].ColumnDetails["Kohde_ID"].FKDetails;
+            var tables = await GetTables(connection);
+            tables = await GetPrimaryKeys(connection, tables);
+            tables = await GetForeignKeys(connection, tables);
+            tables = await GetAllData(connection, tables);
+            tables = DoSearch(searchQuery, tables);
 
             return Ok(tables);
         }
@@ -60,12 +56,9 @@ public class DatabaseController() : ControllerBase
         }
     }
 
-    private async Task<Dictionary<string, TableDetails>> GetTables()
+    private static async Task<Dictionary<string, TableDetails>> GetTables(SqlConnection connection)
     {
         var tables = new Dictionary<string, TableDetails>();
-
-        using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync();
 
         string query = @"
                 SELECT 
@@ -93,11 +86,11 @@ public class DatabaseController() : ControllerBase
             {
                 tables[fullTableName] = new TableDetails
                 {
-                    ColumnDetails = []
+                    Columns = []
                 };
             }
 
-            tables[fullTableName].ColumnDetails.Add(row.ColumnName, new ColumnDetails
+            tables[fullTableName].Columns.Add(row.ColumnName, new ColumnDetails
             {
                 DataType = row.DataType,
                 FKDetails = null
@@ -107,12 +100,9 @@ public class DatabaseController() : ControllerBase
         return tables;
     }
 
-    private async Task<Dictionary<string, TableDetails>> GetPrimaryKeys(Dictionary<string, TableDetails> tables)
+    private static async Task<Dictionary<string, TableDetails>> GetPrimaryKeys(SqlConnection connection, Dictionary<string, TableDetails> tables)
     {
-        using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync();
-
-        string pkQuery = @"
+        string query = @"
             SELECT 
                 t.TABLE_SCHEMA + '.' + t.TABLE_NAME as FullTableName,
                 c.COLUMN_NAME as ColumnName
@@ -127,22 +117,19 @@ public class DatabaseController() : ControllerBase
             WHERE 
                 CONSTRAINT_TYPE = 'PRIMARY KEY'";
 
-        var pkData = await connection.QueryAsync(pkQuery);
+        var pkData = await connection.QueryAsync(query);
 
         foreach (var row in pkData)
         {
-            tables[row.FullTableName].ColumnDetails[row.ColumnName].IsPK = true;
+            tables[row.FullTableName].Columns[row.ColumnName].IsPK = true;
         }
 
         return tables;
     }
 
-    private async Task<Dictionary<string, TableDetails>> GetForeignKeys(Dictionary<string, TableDetails> tables)
+    private static async Task<Dictionary<string, TableDetails>> GetForeignKeys(SqlConnection connection, Dictionary<string, TableDetails> tables)
     {
-        using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync();
-
-        string fkQuery = @"
+        string query = @"
             SELECT 
                 CONCAT(ts.name, '.', tp.name) AS ParentTableName,
                 cp.name AS ParentColumnName,
@@ -166,13 +153,13 @@ public class DatabaseController() : ControllerBase
                 sys.columns AS cr ON fkc.referenced_column_id = cr.column_id AND fkc.referenced_object_id = cr.object_id
                 ORDER BY ParentTableName, ParentColumnName;";
 
-        var fkData = await connection.QueryAsync(fkQuery);
+        var fkData = await connection.QueryAsync(query);
 
         foreach (var row in fkData)
         {
             if (tables.ContainsKey(row.ParentTableName))
             {
-                tables[row.ParentTableName].ColumnDetails[row.ParentColumnName].FKDetails = new FKDetails
+                tables[row.ParentTableName].Columns[row.ParentColumnName].FKDetails = new FKDetails
                 {
                     ReferenceTableName = row.ReferenceTableName,
                     ReferenceColumnName = row.ReferenceColumnName
@@ -183,13 +170,83 @@ public class DatabaseController() : ControllerBase
         return tables;
     }
 
-    private void GetConnectionStringFromHeader(HttpRequest request)
+    public static async Task<Dictionary<string, TableDetails>> GetAllData(SqlConnection connection, Dictionary<string, TableDetails> tables)
+    {
+        foreach (KeyValuePair<string, TableDetails> table in tables)
+        {
+            table.Value.Rows = [];
+
+            //Jos yritetään hakea dataa, jonka tyyppi on geometry, tulee exception. Skipataan toistaiseksi tämmöiset taulut
+            if (table.Key == "Kohde.KohdeSijainti" || table.Key == "Kohde.OsioSijainti" || table.Key == "Kohde.PisteSijainti")
+            {
+                continue;
+            }
+
+            string query = $"SELECT * FROM {table.Key}";
+
+            var rows = await connection.QueryAsync(query);
+
+            foreach (var row in rows)
+            {
+                var rowDictionary = new Dictionary<string, object>();
+
+                foreach (var prop in row as IDictionary<string, object>)
+                {
+                    rowDictionary.Add(prop.Key, prop.Value);
+                }
+
+                table.Value.Rows.Add(rowDictionary);
+            }
+        }
+
+        return tables;
+    }
+
+    private static Dictionary<string, TableDetails> DoSearch(string searchQuery, Dictionary<string, TableDetails> tables)
+    {
+        var result = new Dictionary<string, TableDetails>();
+
+        foreach (var table in tables)
+        {
+            bool shouldAddAllRows = false;
+
+            if (table.Key.Contains(searchQuery, StringComparison.OrdinalIgnoreCase) ||
+                table.Value.Columns.Any(c => c.Key.Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
+            {
+                shouldAddAllRows = true;
+            }
+
+            var newTableDetails = new TableDetails
+            {
+                Columns = table.Value.Columns,
+                Rows = []
+            };
+
+            foreach (var row in table.Value.Rows)
+            {
+                if (shouldAddAllRows || row.Any(col => col.Value != null && col.Value.ToString().Contains(searchQuery, StringComparison.OrdinalIgnoreCase)))
+                {
+                    newTableDetails.Rows.Add(row);
+                }
+            }
+
+            if (shouldAddAllRows || newTableDetails.Rows.Count > 0)
+            {
+                result.Add(table.Key, newTableDetails);
+            }
+        }
+
+        return result;
+    }
+
+    private static string GetConnectionStringFromHeader(HttpRequest request)
     {
         if (!request.Headers.TryGetValue("ConnectionString", out var connectionString))
         {
             throw new Exception("Missing connectionString header");
         }
 
-        _connectionString = connectionString.ToString();
+        return connectionString.ToString();
     }
 }
+
