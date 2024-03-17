@@ -1,17 +1,15 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Data.SqlClient;
 using Api.Models;
-using System.Data;
-using System.Linq;
 using Dapper;
-using System.Data.Common;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Concurrent;
+using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class DatabaseController() : ControllerBase
+public class DatabaseController : ControllerBase
 {
     [HttpGet("TestConnection")]
     public async Task<IActionResult> TestConnection()
@@ -39,13 +37,10 @@ public class DatabaseController() : ControllerBase
         {
             var connectionString = GetConnectionStringFromHeader(Request);
 
-            using var connection = new SqlConnection(connectionString);
-            await connection.OpenAsync();
-
-            var tables = await GetTables(connection);
-            tables = await GetPrimaryKeys(connection, tables);
-            tables = await GetForeignKeys(connection, tables);
-            tables = await GetAllData(connection, tables);
+            var tables = await GetTables(connectionString);
+            tables = await GetPrimaryKeys(connectionString, tables);
+            tables = await GetForeignKeys(connectionString, tables);
+            tables = await GetAllData(connectionString, tables);
             tables = DoSearch(searchQuery, tables);
 
             return Ok(tables);
@@ -56,7 +51,7 @@ public class DatabaseController() : ControllerBase
         }
     }
 
-    private static async Task<Dictionary<string, TableDetails>> GetTables(SqlConnection connection)
+    private static async Task<Dictionary<string, TableDetails>> GetTables(string connectionString)
     {
         var tables = new Dictionary<string, TableDetails>();
 
@@ -76,6 +71,9 @@ public class DatabaseController() : ControllerBase
                     c.TABLE_SCHEMA, 
                     c.TABLE_NAME, 
                     c.ORDINAL_POSITION";
+
+        using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
 
         var columnData = await connection.QueryAsync(query);
 
@@ -100,7 +98,7 @@ public class DatabaseController() : ControllerBase
         return tables;
     }
 
-    private static async Task<Dictionary<string, TableDetails>> GetPrimaryKeys(SqlConnection connection, Dictionary<string, TableDetails> tables)
+    private static async Task<Dictionary<string, TableDetails>> GetPrimaryKeys(string connectionString, Dictionary<string, TableDetails> tables)
     {
         string query = @"
             SELECT 
@@ -117,6 +115,9 @@ public class DatabaseController() : ControllerBase
             WHERE 
                 CONSTRAINT_TYPE = 'PRIMARY KEY'";
 
+        using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
         var pkData = await connection.QueryAsync(query);
 
         foreach (var row in pkData)
@@ -127,7 +128,7 @@ public class DatabaseController() : ControllerBase
         return tables;
     }
 
-    private static async Task<Dictionary<string, TableDetails>> GetForeignKeys(SqlConnection connection, Dictionary<string, TableDetails> tables)
+    private static async Task<Dictionary<string, TableDetails>> GetForeignKeys(string connectionString, Dictionary<string, TableDetails> tables)
     {
         string query = @"
             SELECT 
@@ -153,6 +154,9 @@ public class DatabaseController() : ControllerBase
                 sys.columns AS cr ON fkc.referenced_column_id = cr.column_id AND fkc.referenced_object_id = cr.object_id
                 ORDER BY ParentTableName, ParentColumnName;";
 
+        using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
         var fkData = await connection.QueryAsync(query);
 
         foreach (var row in fkData)
@@ -170,33 +174,48 @@ public class DatabaseController() : ControllerBase
         return tables;
     }
 
-    public static async Task<Dictionary<string, TableDetails>> GetAllData(SqlConnection connection, Dictionary<string, TableDetails> tables)
+    private static async Task<Dictionary<string, TableDetails>> GetAllData(string connectionString, Dictionary<string, TableDetails> tables)
     {
-        foreach (KeyValuePair<string, TableDetails> table in tables)
-        {
-            table.Value.Rows = [];
+        var tasks = new List<Task>();
 
-            //Jos yritetään hakea dataa, jonka tyyppi on geometry, tulee exception. Skipataan toistaiseksi tämmöiset taulut
-            if (table.Key == "Kohde.KohdeSijainti" || table.Key == "Kohde.OsioSijainti" || table.Key == "Kohde.PisteSijainti")
+        var tempResults = new ConcurrentDictionary<string, List<Dictionary<string, object>>>();
+
+        foreach (var table in tables.Keys.ToList())
+        {
+            if (table == "Kohde.KohdeSijainti" || table == "Kohde.OsioSijainti" || table == "Kohde.PisteSijainti")
             {
                 continue;
             }
 
-            string query = $"SELECT * FROM {table.Key}";
-
-            var rows = await connection.QueryAsync(query);
-
-            foreach (var row in rows)
+            tasks.Add(Task.Run(async () =>
             {
-                var rowDictionary = new Dictionary<string, object>();
+                using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+                string query = $"SELECT * FROM {table}";
+                var rows = await connection.QueryAsync(query);
+                var rowList = new List<Dictionary<string, object>>();
 
-                foreach (var prop in row as IDictionary<string, object>)
+                foreach (var row in rows)
                 {
-                    rowDictionary.Add(prop.Key, prop.Value);
+                    var rowDictionary = new Dictionary<string, object>();
+
+                    foreach (var prop in row as IDictionary<string, object>)
+                    {
+                        rowDictionary.Add(prop.Key, prop.Value);
+                    }
+
+                    rowList.Add(rowDictionary);
                 }
 
-                table.Value.Rows.Add(rowDictionary);
-            }
+                tempResults.TryAdd(table, rowList);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        foreach (var kvp in tempResults)
+        {
+            tables[kvp.Key].Rows = kvp.Value;
         }
 
         return tables;

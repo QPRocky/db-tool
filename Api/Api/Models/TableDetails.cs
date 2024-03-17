@@ -16,5 +16,5 @@ public class ColumnDetails
 public class TableDetails
 {
     public Dictionary<string, ColumnDetails> Columns { get; set; }
-    public List<Dictionary<string, object>> Rows { get; set; }
+    public List<Dictionary<string, object>> Rows { get; set; } = [];
 }
