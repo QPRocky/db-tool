@@ -14,12 +14,12 @@ import {
 } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import ConnectionInputWrapper from './ConnectionInputWrapper';
-import ConnectionType from '../interfaces/ConnectionType';
+import ConnectionType from '../../interfaces/ConnectionType';
 import axios from 'axios';
-import getAxiosError from '../utils/getAxiosError';
-import usePersistConnectionsStore from '../stores/usePersistConnectionsStore ';
+import getAxiosError from '../../utils/getAxiosError';
+import usePersistConnectionsStore from '../../stores/usePersistConnectionsStore ';
 import { v4 as uuidv4 } from 'uuid';
-import useEditConnectionStore from '../stores/useEditConnectionStore';
+import useEditConnectionStore from '../../stores/useEditConnectionStore';
 
 const ConnectionModal = () => {
   const saveConnection = usePersistConnectionsStore(s => s.saveConnection);
