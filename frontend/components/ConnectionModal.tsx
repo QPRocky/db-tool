@@ -20,8 +20,6 @@ import axios from 'axios';
 import getAxiosError from '../utils/getAxiosError';
 import usePersistConnectionsStore from '../stores/usePersistConnectionsStore ';
 import { v4 as uuidv4 } from 'uuid';
-// import ConnectionType from '../../interfaces/ConnectionType';
-// import getPort from '../utils/getPort';
 
 interface Props {
   editConnectionItem?: Connection;
@@ -36,26 +34,6 @@ const ConnectionModal = ({ editConnectionItem, isOpen, onClose }: Props) => {
   const [connectionString, setConnectionString] = useState('');
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
-
-  /*useEffect(() => {
-    const removeTrackListener = window.ipc.on('testConnection', args => {
-      const error = args as string
-
-      toast({
-        title: error === "" ? "Connection Successful" : "Connection Failed",
-        description: error,
-        status: error === "" ? "success" : "error",
-        duration: 10000,
-        isClosable: true
-      })
-
-      setIsLoading(false)
-    });
-
-    return () => {
-      removeTrackListener();
-    };
-  }, [])*/
 
   useEffect(() => {
     if (editConnectionItem) {
@@ -106,7 +84,7 @@ const ConnectionModal = ({ editConnectionItem, isOpen, onClose }: Props) => {
       title: errorMessage === '' ? 'Connection Successful' : 'Connection Failed',
       description: errorMessage,
       status: errorMessage === '' ? 'success' : 'error',
-      duration: 10000,
+      duration: errorMessage === '' ? 3000 : 10000,
       isClosable: true,
     });
 

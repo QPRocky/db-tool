@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Flex, Input, Button } from '@chakra-ui/react';
 import { NextPage } from 'next';
-import MainContainer from '../../components/MainContainer';
+import MainContainer from '../components/MainContainer';
 
-const TrackPage: NextPage = () => {
+const SearchPage: NextPage = () => {
   return (
     <MainContainer>
-      <p>TrackPage</p>
+      <p>SearchPage</p>
     </MainContainer>
   );
 };
 
-export default TrackPage;
+export default SearchPage;

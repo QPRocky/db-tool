@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { VscDebugStart, VscEdit, VscTrash, VscDebugDisconnect } from 'react-icons/vsc';
 import { Flex, Text, Button, useDisclosure, Box } from '@chakra-ui/react';
 import { NextPage } from 'next';
-import MainContainer from '../../components/MainContainer';
-import ConnectionModal from '../../components/ConnectionModal';
-import Connection from '../../interfaces/Connection';
-import usePersistConnectionsStore from '../../stores/usePersistConnectionsStore ';
-import useCurrentConnectionStore from '../../stores/useCurrentConnectionStore';
+import MainContainer from '../components/MainContainer';
+import ConnectionModal from '../components/ConnectionModal';
+import Connection from '../interfaces/Connection';
+import usePersistConnectionsStore from '../stores/usePersistConnectionsStore ';
+import useCurrentConnectionStore from '../stores/useCurrentConnectionStore';
 
 const SettingsPage: NextPage = () => {
   const connections = usePersistConnectionsStore(s => s.connections);
@@ -38,7 +38,7 @@ const SettingsPage: NextPage = () => {
   return (
     <>
       <MainContainer>
-        <Flex flex={1} direction="column" maxW={'300px'} pl={2}>
+        <Flex flex={1} direction="column" maxW={'300px'} pl={2} borderWidth={2}>
           <Text fontSize="xs" py={3}>
             Connections
           </Text>
