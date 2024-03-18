@@ -15,25 +15,22 @@ import {
 import { useEffect, useState } from 'react';
 import ConnectionInputWrapper from './ConnectionInputWrapper';
 import ConnectionType from '../interfaces/ConnectionType';
-import Connection from '../interfaces/Connection';
 import axios from 'axios';
 import getAxiosError from '../utils/getAxiosError';
 import usePersistConnectionsStore from '../stores/usePersistConnectionsStore ';
 import { v4 as uuidv4 } from 'uuid';
+import useEditConnectionStore from '../stores/useEditConnectionStore';
 
-interface Props {
-  editConnectionItem?: Connection;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const ConnectionModal = ({ editConnectionItem, isOpen, onClose }: Props) => {
+const ConnectionModal = () => {
   const saveConnection = usePersistConnectionsStore(s => s.saveConnection);
   const [connectionType, setConnectionType] = useState<ConnectionType>('mssql');
   const [connectionName, setConnectionName] = useState('');
   const [connectionString, setConnectionString] = useState('');
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const isConnectionModalOpen = useEditConnectionStore(s => s.isConnectionModalOpen);
+  const setConnectionModalClose = useEditConnectionStore(s => s.setConnectionModalClose);
+  const editConnectionItem = useEditConnectionStore(s => s.editConnectionItem);
 
   useEffect(() => {
     if (editConnectionItem) {
@@ -59,7 +56,7 @@ const ConnectionModal = ({ editConnectionItem, isOpen, onClose }: Props) => {
     setConnectionName('');
     setConnectionString('');
 
-    onClose();
+    setConnectionModalClose();
   };
 
   const isButtonsDisabled = () => {
@@ -71,7 +68,7 @@ const ConnectionModal = ({ editConnectionItem, isOpen, onClose }: Props) => {
     setIsLoading(true);
 
     try {
-      const res = await axios.get('https://localhost:7210/Database/testConnection', {
+      await axios.get('https://localhost:7210/Database/testConnection', {
         headers: {
           ConnectionString: connectionString,
         },
@@ -97,7 +94,7 @@ const ConnectionModal = ({ editConnectionItem, isOpen, onClose }: Props) => {
   ];
 
   return (
-    <Modal isOpen={isOpen} onClose={onCloseHandler} size="xl">
+    <Modal isOpen={isConnectionModalOpen} onClose={onCloseHandler} size="xl">
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>{editConnectionItem ? 'Edit connection' : 'Add connection'}</ModalHeader>
