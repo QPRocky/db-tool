@@ -1,34 +1,28 @@
 import { Input, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import useCurrentConnectionStore from '../stores/useCurrentConnectionStore';
-import axios from 'axios';
 import getAxiosError from '../utils/getAxiosError';
-import { Tables } from '../interfaces/Tables';
 import useResultsStore from '../stores/useResultsStore';
+import { useSeach } from '../hooks/useSeach';
 
 const SearchInput = () => {
-  const [seachValue, setSeachValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
   const connectionStatus = useCurrentConnectionStore(s => s.connectionStatus);
-  const activeConnection = useCurrentConnectionStore(s => s.activeConnection);
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const setResultTables = useResultsStore(s => s.setResultTables);
+  const { refetch } = useSeach(searchValue);
 
-  const search = async (seachValue: string) => {
+  const search = async () => {
+    if (isLoading) return;
+
     setIsLoading(true);
 
-    try {
-      const { data } = await axios.get<Tables>(
-        `https://localhost:7210/Database/search?searchQuery=${seachValue}`,
-        {
-          headers: {
-            ConnectionString: activeConnection?.connectionString,
-          },
-        },
-      );
+    const { data, error } = await refetch();
 
+    if (data) {
       setResultTables(data);
-    } catch (error) {
+    } else {
       const errorMessage = getAxiosError(error);
 
       toast({
@@ -47,12 +41,11 @@ const SearchInput = () => {
     <Input
       isDisabled={connectionStatus === 'disconnected' || isLoading}
       w="full"
-      value={seachValue}
-      onChange={e => setSeachValue(e.target.value)}
+      value={searchValue}
+      onChange={e => setSearchValue(e.target.value)}
       onKeyDown={e => {
         if (e.key === 'Enter') {
-          if (isLoading) return;
-          search(seachValue);
+          search();
         }
       }}
     />
