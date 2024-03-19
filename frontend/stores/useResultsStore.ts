@@ -1,11 +1,11 @@
 import { create } from 'zustand';
-import { TableDetails, Tables } from '../interfaces/Tables';
+import { Tables } from '../interfaces/Tables';
 
 interface State {
-  selectedTable?: TableDetails;
+  selectedTable?: string;
   resultTables?: Tables;
   jsonString: string;
-  setSelectedTable: (selectedTable: TableDetails) => void;
+  setSelectedTable: (selectedTable: string) => void;
   setResultTables: (resultTables: Tables) => void;
   setJsonString: (jsonString: string) => void;
 }
@@ -15,7 +15,7 @@ const useResultsStore = create<State>()(set => ({
   resultTables: undefined,
   jsonString: '',
 
-  setSelectedTable: (selectedTable: TableDetails) =>
+  setSelectedTable: (selectedTable: string) =>
     set({
       selectedTable,
     }),

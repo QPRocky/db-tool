@@ -13,36 +13,6 @@ const SearchInput = () => {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const setResultTables = useResultsStore(s => s.setResultTables);
-  /*
-
-  useEffect(() => {
-    const removeTrackListener = window.ipc.on('search', args => {
-      const { foreignKeyDetails, data } = args as SearchResult;
-
-      setDbData(data);
-      setForeignKeyDetails(foreignKeyDetails);
-
-      const tables = Object.keys(data);
-
-      if (tables.length > 0) {
-        if (selectedTable) {
-          if (tables.includes(selectedTable)) {
-            setSelectedTable(selectedTable);
-          } else {
-            setSelectedTable(tables[0]);
-          }
-        } else {
-          setSelectedTable(tables[0]);
-        }
-      }
-
-      setIsLoading(false);
-    });
-
-    return () => {
-      removeTrackListener();
-    };
-  }, [selectedTable]);*/
 
   const search = async (seachValue: string) => {
     setIsLoading(true);
@@ -58,11 +28,6 @@ const SearchInput = () => {
       );
 
       setResultTables(data);
-
-      /*console.log(data);
-      console.log(data['Kohde.Kohde'].columns['Kohde_ID'].isPK);
-      console.log(data['Kohde.Kohde'].columns['Ensisijainen_Yhteyshenkilo_ID'].fkDetails);
-      console.log(data['Kohde.Kohde'].rows[0]['Kohde_ID']);*/
     } catch (error) {
       const errorMessage = getAxiosError(error);
 

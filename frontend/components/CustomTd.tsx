@@ -1,14 +1,11 @@
-import { Td, Flex, useToast } from '@chakra-ui/react';
+import { Td, Flex } from '@chakra-ui/react';
 import { VscEdit } from 'react-icons/vsc';
-import { ColumnDetails, Tables } from '../interfaces/Tables';
+import { ColumnDetails } from '../interfaces/Tables';
 import formatValue from '../utils/formatValue';
 import getTextColor from '../utils/getTextColor';
 import isJson from '../utils/isJson';
 import useResultsStore from '../stores/useResultsStore';
 import getCursor from '../utils/getCursor';
-import axios from 'axios';
-import useCurrentConnectionStore from '../stores/useCurrentConnectionStore';
-import getAxiosError from '../utils/getAxiosError';
 
 interface Props {
   columnName: string;
@@ -20,9 +17,6 @@ interface Props {
 
 const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Props) => {
   const setJsonString = useResultsStore(s => s.setJsonString);
-  const activeConnection = useCurrentConnectionStore(s => s.activeConnection);
-  const toast = useToast();
-  const setResultTables = useResultsStore(s => s.setResultTables);
   const selectedTable = useResultsStore(s => s.selectedTable);
 
   const isJsonString = isJson(value);
@@ -33,33 +27,17 @@ const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Prop
       onOpen();
     }
 
-    //kun klikataan FK, haetaan vaan yks taulu
-    console.log(selectedTable, columnName, columnDetails, value);
+    if (columnDetails.isPK) {
+      console.log(selectedTable);
+      console.log(columnName);
+      console.log(value);
+    }
 
-    /*if (columnDetails.isPK || columnDetails.fkDetails) {
-      try {
-        const { data } = await axios.get<Tables>(
-          `https://localhost:7210/Database/search?searchQuery=${value}`,
-          {
-            headers: {
-              ConnectionString: activeConnection?.connectionString,
-            },
-          },
-        );
-
-        setResultTables(data);
-      } catch (error) {
-        const errorMessage = getAxiosError(error);
-
-        toast({
-          title: 'Error',
-          description: errorMessage,
-          status: 'error',
-          duration: 3000,
-          isClosable: true,
-        });
-      }
-    }*/
+    if (columnDetails.fkDetails) {
+      console.log(columnDetails.fkDetails.referenceTableName);
+      console.log(columnDetails.fkDetails.referenceColumnName);
+      console.log(value);
+    }
   };
 
   const onEditClick = () => {

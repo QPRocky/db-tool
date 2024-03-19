@@ -13,13 +13,13 @@ const TablesList = () => {
       <Text py={5} fontSize="sm" px={2} as="b">
         Tables
       </Text>
-      {Object.entries(resultTables).map(([tableName, tableDetails]) => (
+      {Object.keys(resultTables).map(tableName => (
         <Flex
           key={tableName}
-          bgColor={selectedTable === tableDetails ? 'gray.600' : undefined}
+          bgColor={selectedTable === tableName ? 'gray.600' : undefined}
           _hover={{ bgColor: 'gray.600' }}
           cursor="pointer"
-          onClick={() => setSelectedTable(tableDetails)}
+          onClick={() => setSelectedTable(tableName)}
         >
           <Text fontSize="xs" px={2} py={1}>
             {tableName}
