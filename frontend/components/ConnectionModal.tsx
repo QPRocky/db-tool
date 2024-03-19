@@ -15,11 +15,11 @@ import {
 import { useEffect, useState } from 'react';
 import ConnectionInputWrapper from './ConnectionInputWrapper';
 import ConnectionType from '../interfaces/ConnectionType';
-import axios from 'axios';
 import getAxiosError from '../utils/getAxiosError';
 import usePersistConnectionsStore from '../stores/usePersistConnectionsStore ';
 import { v4 as uuidv4 } from 'uuid';
 import useEditConnectionStore from '../stores/useEditConnectionStore';
+import { useTestConnection } from '../hooks/useTestConnection';
 
 const ConnectionModal = () => {
   const saveConnection = usePersistConnectionsStore(s => s.saveConnection);
@@ -31,6 +31,7 @@ const ConnectionModal = () => {
   const isConnectionModalOpen = useEditConnectionStore(s => s.isConnectionModalOpen);
   const setConnectionModalClose = useEditConnectionStore(s => s.setConnectionModalClose);
   const editConnectionItem = useEditConnectionStore(s => s.editConnectionItem);
+  const { refetch } = useTestConnection(connectionString);
 
   useEffect(() => {
     if (editConnectionItem) {
@@ -64,24 +65,15 @@ const ConnectionModal = () => {
   };
 
   const testConnection = async () => {
-    let errorMessage = '';
     setIsLoading(true);
 
-    try {
-      await axios.get('https://localhost:7210/Database/testConnection', {
-        headers: {
-          ConnectionString: connectionString,
-        },
-      });
-    } catch (error) {
-      errorMessage = getAxiosError(error);
-    }
+    const { error } = await refetch();
 
     toast({
-      title: errorMessage === '' ? 'Connection Successful' : 'Connection Failed',
-      description: errorMessage,
-      status: errorMessage === '' ? 'success' : 'error',
-      duration: errorMessage === '' ? 3000 : 10000,
+      title: error ? 'Connection Failed' : 'Connection Successful',
+      description: error ? getAxiosError(error) : '',
+      status: error ? 'error' : 'success',
+      duration: error ? 10000 : 3000,
       isClosable: true,
     });
 
