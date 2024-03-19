@@ -51,6 +51,27 @@ public class DatabaseController : ControllerBase
         }
     }
 
+    [HttpGet("SearchByPk")]
+    public async Task<IActionResult> SearchByPk(int pk)
+    {
+        try
+        {
+            var connectionString = GetConnectionStringFromHeader(Request);
+
+            var tables = await GetTables(connectionString);
+            tables = await GetPrimaryKeys(connectionString, tables);
+            tables = await GetForeignKeys(connectionString, tables);
+            tables = await GetAllData(connectionString, tables);
+            //tables = DoSearch(searchQuery, tables);
+
+            return Ok(tables);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+
     private static async Task<Dictionary<string, TableDetails>> GetTables(string connectionString)
     {
         var tables = new Dictionary<string, TableDetails>();

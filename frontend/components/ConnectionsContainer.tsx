@@ -1,10 +1,10 @@
 import React from 'react';
 import { VscDebugStart, VscEdit, VscTrash, VscDebugDisconnect } from 'react-icons/vsc';
 import { Flex, Text, Button, Box } from '@chakra-ui/react';
-import Connection from '../../interfaces/Connection';
-import usePersistConnectionsStore from '../../stores/usePersistConnectionsStore ';
-import useCurrentConnectionStore from '../../stores/useCurrentConnectionStore';
-import useEditConnectionStore from '../../stores/useEditConnectionStore';
+import Connection from '../interfaces/Connection';
+import usePersistConnectionsStore from '../stores/usePersistConnectionsStore ';
+import useCurrentConnectionStore from '../stores/useCurrentConnectionStore';
+import useEditConnectionStore from '../stores/useEditConnectionStore';
 
 const ConnectionsContainer = () => {
   const connections = usePersistConnectionsStore(s => s.connections);
@@ -29,7 +29,7 @@ const ConnectionsContainer = () => {
   };
 
   return (
-    <Flex flex={1} direction="column" maxW={'300px'} pl={2} borderWidth={2}>
+    <Flex flex={1} direction="column" maxW={'300px'} pl={2}>
       <Text fontSize="xs" py={3}>
         Connections
       </Text>
