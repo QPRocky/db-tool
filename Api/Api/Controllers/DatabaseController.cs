@@ -30,6 +30,21 @@ public class DatabaseController : ControllerBase
         }
     }
 
+    [HttpGet("SearchTableNames")]
+    public async Task<IActionResult> SearchTableNames(string searchQuery)
+    {
+        try
+        {
+            var connectionString = GetConnectionStringFromHeader(Request);
+            var tables = await GetTableNames(connectionString, searchQuery);
+            return Ok(tables);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+
     [HttpGet("Search")]
     public async Task<IActionResult> Search(string searchQuery)
     {
@@ -70,6 +85,27 @@ public class DatabaseController : ControllerBase
         {
             return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
+    }
+
+    private static async Task<List<string>> GetTableNames(string connectionString, string tableNameToSearch)
+    {
+        string query = @"
+            SELECT 
+                t.TABLE_SCHEMA + '.' + t.TABLE_NAME as FullTableName    
+            FROM 
+                INFORMATION_SCHEMA.TABLES t
+            WHERE 
+                t.TABLE_TYPE = 'BASE TABLE' AND
+                (t.TABLE_SCHEMA + '.' + t.TABLE_NAME) LIKE @TableNameSearchPattern";
+
+        using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        string searchPattern = $"%{tableNameToSearch}%";
+
+        var tableNames = await connection.QueryAsync<string>(query, new { TableNameSearchPattern = searchPattern });
+
+        return tableNames.AsList();
     }
 
     private static async Task<Dictionary<string, TableDetails>> GetTables(string connectionString)
