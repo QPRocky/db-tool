@@ -11,16 +11,16 @@ const SearchInput = () => {
   const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const setResultTables = useResultsStore(s => s.setResultTables);
-  const { refetch } = useSeach(searchValue);
+  const { refetch: search } = useSeach(searchValue);
   const selectedTable = useResultsStore(s => s.selectedTable);
   const setSelectedTable = useResultsStore(s => s.setSelectedTable);
 
-  const search = async () => {
+  const doSearch = async () => {
     if (isLoading) return;
 
     setIsLoading(true);
 
-    const { data, error } = await refetch();
+    const { data, error } = await search();
 
     if (data) {
       const resetSelectedTable = !selectedTable || !data || !data[selectedTable];
@@ -52,7 +52,7 @@ const SearchInput = () => {
       onChange={e => setSearchValue(e.target.value)}
       onKeyDown={e => {
         if (e.key === 'Enter') {
-          search();
+          doSearch();
         }
       }}
     />
