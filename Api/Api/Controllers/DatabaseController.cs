@@ -43,6 +43,7 @@ public class DatabaseController : ControllerBase
             tables = await GetForeignKeys(connectionString, tables);
             tables = await GetAllData(connectionString, tables);
             tables = DoSearch(searchQuery, tables);
+            tables = RemoveEmptyTables(tables);
 
             return Ok(tables);
         }
@@ -64,6 +65,7 @@ public class DatabaseController : ControllerBase
             tables = await GetForeignKeys(connectionString, tables);
             tables = FilterTablesByTableNameAndColumnName(tables, dto.TableName, dto.ColumnName);
             tables = await GetAllDataByPrimaryKey(connectionString, tables, dto.ColumnName, dto.PrimaryKey);
+            tables = RemoveEmptyTables(tables);
 
             return Ok(tables);
         }
@@ -389,6 +391,18 @@ public class DatabaseController : ControllerBase
         foreach (var kvp in tempResults)
         {
             tables[kvp.Key].Rows = kvp.Value;
+        }
+
+        return tables;
+    }
+
+    private static Dictionary<string, TableDetails> RemoveEmptyTables(Dictionary<string, TableDetails> tables)
+    {
+        var emptyTableKeys = tables.Where(kvp => kvp.Value.Rows.Count == 0).Select(kvp => kvp.Key).ToList();
+
+        foreach (var key in emptyTableKeys)
+        {
+            tables.Remove(key);
         }
 
         return tables;

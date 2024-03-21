@@ -30,7 +30,6 @@ export const useSearchByPrimaryKey = () => {
   return useMutation({
     mutationFn: (dto: PrimaryKeySearchDetails) => sendData(dto, activeConnection),
     onSuccess: data => {
-      console.log(data);
       const resetSelectedTable = !selectedTable || !data || !data[selectedTable];
 
       if (resetSelectedTable) {
