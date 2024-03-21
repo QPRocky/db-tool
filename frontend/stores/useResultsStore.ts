@@ -5,7 +5,7 @@ interface State {
   selectedTable?: string;
   resultTables?: Tables;
   jsonString: string;
-  setSelectedTable: (selectedTable: string) => void;
+  setSelectedTable: (selectedTable?: string) => void;
   setResultTables: (resultTables: Tables) => void;
   setJsonString: (jsonString: string) => void;
 }
@@ -15,7 +15,7 @@ const useResultsStore = create<State>()(set => ({
   resultTables: undefined,
   jsonString: '',
 
-  setSelectedTable: (selectedTable: string) =>
+  setSelectedTable: (selectedTable?: string) =>
     set({
       selectedTable,
     }),

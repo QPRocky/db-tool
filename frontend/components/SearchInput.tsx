@@ -12,6 +12,8 @@ const SearchInput = () => {
   const toast = useToast();
   const setResultTables = useResultsStore(s => s.setResultTables);
   const { refetch } = useSeach(searchValue);
+  const selectedTable = useResultsStore(s => s.selectedTable);
+  const setSelectedTable = useResultsStore(s => s.setSelectedTable);
 
   const search = async () => {
     if (isLoading) return;
@@ -21,6 +23,11 @@ const SearchInput = () => {
     const { data, error } = await refetch();
 
     if (data) {
+      const resetSelectedTable = !selectedTable || !data || !data[selectedTable];
+      if (resetSelectedTable) {
+        setSelectedTable(undefined);
+      }
+
       setResultTables(data);
     } else {
       const errorMessage = getAxiosError(error);
