@@ -6,6 +6,8 @@ import getTextColor from '../utils/getTextColor';
 import isJson from '../utils/isJson';
 import useResultsStore from '../stores/useResultsStore';
 import getCursor from '../utils/getCursor';
+import { useSearchByPrimaryKey } from '../hooks/useSearchByPrimaryKey';
+import { useSearchByForeignKey } from '../hooks/useSearchByForeignKey';
 
 interface Props {
   columnName: string;
@@ -18,6 +20,8 @@ interface Props {
 const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Props) => {
   const setJsonString = useResultsStore(s => s.setJsonString);
   const selectedTable = useResultsStore(s => s.selectedTable);
+  const { mutateAsync: searchByPrimaryKey } = useSearchByPrimaryKey();
+  const { mutateAsync: searchByForeignKey } = useSearchByForeignKey();
 
   const isJsonString = isJson(value);
 
@@ -28,15 +32,23 @@ const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Prop
     }
 
     if (columnDetails.isPK) {
-      console.log(selectedTable);
-      console.log(columnName);
-      console.log(value);
+      const res = await searchByPrimaryKey({
+        tableName: selectedTable!,
+        columnName,
+        primaryKey: value,
+      });
+
+      console.log('TODO...');
     }
 
     if (columnDetails.fkDetails) {
-      console.log(columnDetails.fkDetails.referenceTableName);
-      console.log(columnDetails.fkDetails.referenceColumnName);
-      console.log(value);
+      const res = await searchByForeignKey({
+        referenceTableName: columnDetails.fkDetails.referenceTableName,
+        referenceColumnName: columnDetails.fkDetails.referenceColumnName,
+        foreignKey: value,
+      });
+
+      console.log('TODO...');
     }
   };
 
