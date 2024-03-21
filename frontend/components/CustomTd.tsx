@@ -32,23 +32,19 @@ const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Prop
     }
 
     if (columnDetails.isPK) {
-      const res = await searchByPrimaryKey({
+      await searchByPrimaryKey({
         tableName: selectedTable!,
         columnName,
         primaryKey: value,
       });
-
-      console.log('TODO...');
     }
 
     if (columnDetails.fkDetails) {
-      const res = await searchByForeignKey({
+      await searchByForeignKey({
         referenceTableName: columnDetails.fkDetails.referenceTableName,
         referenceColumnName: columnDetails.fkDetails.referenceColumnName,
         foreignKey: value,
       });
-
-      console.log('TODO...');
     }
   };
 

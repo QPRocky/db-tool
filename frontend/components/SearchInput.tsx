@@ -24,6 +24,7 @@ const SearchInput = () => {
 
     if (data) {
       const resetSelectedTable = !selectedTable || !data || !data[selectedTable];
+
       if (resetSelectedTable) {
         setSelectedTable(undefined);
       }

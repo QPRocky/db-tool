@@ -62,8 +62,8 @@ public class DatabaseController : ControllerBase
             var tables = await GetTables(connectionString);
             tables = await GetPrimaryKeys(connectionString, tables);
             tables = await GetForeignKeys(connectionString, tables);
-            tables = await GetAllData(connectionString, tables);
-            //tables = DoSearch(searchQuery, tables);
+            tables = FilterTablesByTableNameAndColumnName(tables, dto.TableName, dto.ColumnName);
+            tables = await GetAllDataByPrimaryKey(connectionString, tables, dto.ColumnName, dto.PrimaryKey);
 
             return Ok(tables);
         }
@@ -80,11 +80,10 @@ public class DatabaseController : ControllerBase
         {
             var connectionString = GetConnectionStringFromHeader(Request);
 
-            var tables = await GetTables(connectionString);
+            var tables = await GetTableByName(connectionString, dto.ReferenceTableName);
             tables = await GetPrimaryKeys(connectionString, tables);
             tables = await GetForeignKeys(connectionString, tables);
-            tables = await GetAllData(connectionString, tables);
-            //tables = DoSearch(searchQuery, tables);
+            tables = await GetAllDataByKey(connectionString, tables, dto.ReferenceColumnName, dto.ForeignKey);
 
             return Ok(tables);
         }
@@ -101,7 +100,6 @@ public class DatabaseController : ControllerBase
         string query = @"
                 SELECT 
                     t.TABLE_SCHEMA + '.' + t.TABLE_NAME as FullTableName,
-                    c.TABLE_NAME as TableName, 
                     c.COLUMN_NAME as ColumnName, 
                     c.DATA_TYPE as DataType 
                 FROM 
@@ -141,6 +139,78 @@ public class DatabaseController : ControllerBase
         return tables;
     }
 
+    private static async Task<Dictionary<string, TableDetails>> GetTableByName(string connectionString, string tableName)
+    {
+        var tables = new Dictionary<string, TableDetails>();
+        var tableNameParts = tableName.Split('.');
+
+        string query = @"
+                SELECT 
+                    t.TABLE_SCHEMA + '.' + t.TABLE_NAME as FullTableName,
+                    c.COLUMN_NAME as ColumnName, 
+                    c.DATA_TYPE as DataType 
+                FROM 
+                    INFORMATION_SCHEMA.COLUMNS c
+                INNER JOIN 
+                    INFORMATION_SCHEMA.TABLES t ON c.TABLE_NAME = t.TABLE_NAME AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                WHERE 
+                    t.TABLE_TYPE = 'BASE TABLE' AND 
+                    t.TABLE_SCHEMA = @Schema AND 
+                    t.TABLE_NAME = @TableName
+                ORDER BY 
+                    c.TABLE_SCHEMA, 
+                    c.TABLE_NAME, 
+                    c.ORDINAL_POSITION";
+
+        using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        var columnData = await connection.QueryAsync(query, new { Schema = tableNameParts.First(), TableName = tableNameParts.Last() });
+
+        foreach (var row in columnData)
+        {
+            var fullTableName = row.FullTableName;
+            if (!tables.ContainsKey(fullTableName))
+            {
+                tables[fullTableName] = new TableDetails
+                {
+                    Columns = []
+                };
+            }
+
+            tables[fullTableName].Columns.Add(row.ColumnName, new ColumnDetails
+            {
+                DataType = row.DataType,
+                FKDetails = null
+            });
+        }
+
+        return tables;
+    }
+
+    private static Dictionary<string, TableDetails> FilterTablesByTableNameAndColumnName(Dictionary<string, TableDetails> tables, string tableName, string columnName)
+    {
+        var filteredTables = new Dictionary<string, TableDetails>();
+
+        foreach (var table in tables)
+        {
+            foreach (var column in table.Value.Columns)
+            {
+                if (column.Value.FKDetails != null &&
+                    column.Value.FKDetails.ReferenceTableName == tableName &&
+                    column.Value.FKDetails.ReferenceColumnName == columnName)
+                {
+                    if (!filteredTables.ContainsKey(table.Key))
+                    {
+                        filteredTables.Add(table.Key, table.Value);
+                    }
+                }
+            }
+        }
+
+        return filteredTables;
+    }
+
     private static async Task<Dictionary<string, TableDetails>> GetPrimaryKeys(string connectionString, Dictionary<string, TableDetails> tables)
     {
         string query = @"
@@ -165,7 +235,10 @@ public class DatabaseController : ControllerBase
 
         foreach (var row in pkData)
         {
-            tables[row.FullTableName].Columns[row.ColumnName].IsPK = true;
+            if (tables.ContainsKey(row.FullTableName))
+            {
+                tables[row.FullTableName].Columns[row.ColumnName].IsPK = true;
+            }
         }
 
         return tables;
@@ -220,7 +293,6 @@ public class DatabaseController : ControllerBase
     private static async Task<Dictionary<string, TableDetails>> GetAllData(string connectionString, Dictionary<string, TableDetails> tables)
     {
         var tasks = new List<Task>();
-
         var tempResults = new ConcurrentDictionary<string, List<Dictionary<string, object>>>();
 
         foreach (var table in tables.Keys.ToList())
@@ -235,6 +307,111 @@ public class DatabaseController : ControllerBase
                 using var connection = new SqlConnection(connectionString);
                 await connection.OpenAsync();
                 string query = $"SELECT * FROM {table}";
+                var rows = await connection.QueryAsync(query);
+                var rowList = new List<Dictionary<string, object>>();
+
+                foreach (var row in rows)
+                {
+                    var rowDictionary = new Dictionary<string, object>();
+
+                    foreach (var prop in row as IDictionary<string, object>)
+                    {
+                        rowDictionary.Add(prop.Key, prop.Value);
+                    }
+
+                    rowList.Add(rowDictionary);
+                }
+
+                tempResults.TryAdd(table, rowList);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        foreach (var kvp in tempResults)
+        {
+            tables[kvp.Key].Rows = kvp.Value;
+        }
+
+        return tables;
+    }
+
+    private static async Task<Dictionary<string, TableDetails>> GetAllDataByPrimaryKey(string connectionString, Dictionary<string, TableDetails> tables, string columnName, int primaryKey)
+    {
+        var tasks = new List<Task>();
+
+        var tempResults = new ConcurrentDictionary<string, List<Dictionary<string, object>>>();
+
+        foreach (var table in tables)
+        {
+            if (table.Key == "Kohde.KohdeSijainti" || table.Key == "Kohde.OsioSijainti" || table.Key == "Kohde.PisteSijainti")
+            {
+                continue;
+            }
+
+            var referenceColumnName = "";
+
+            foreach (var column in table.Value.Columns)
+            {
+                if (column.Value.FKDetails != null && column.Value.FKDetails.ReferenceColumnName == columnName)
+                {
+                    referenceColumnName = column.Key;
+                    break;
+                }
+            }
+
+            tasks.Add(Task.Run(async () =>
+            {
+                using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+                string query = $"SELECT * FROM {table.Key} t WHERE t.{referenceColumnName}={primaryKey}";
+                var rows = await connection.QueryAsync(query);
+                var rowList = new List<Dictionary<string, object>>();
+
+                foreach (var row in rows)
+                {
+                    var rowDictionary = new Dictionary<string, object>();
+
+                    foreach (var prop in row as IDictionary<string, object>)
+                    {
+                        rowDictionary.Add(prop.Key, prop.Value);
+                    }
+
+                    rowList.Add(rowDictionary);
+                }
+
+                tempResults.TryAdd(table.Key, rowList);
+            }));
+        }
+
+        await Task.WhenAll(tasks);
+
+        foreach (var kvp in tempResults)
+        {
+            tables[kvp.Key].Rows = kvp.Value;
+        }
+
+        return tables;
+    }
+
+    private static async Task<Dictionary<string, TableDetails>> GetAllDataByKey(string connectionString, Dictionary<string, TableDetails> tables, string column, int key)
+    {
+        var tasks = new List<Task>();
+
+        var tempResults = new ConcurrentDictionary<string, List<Dictionary<string, object>>>();
+
+        foreach (var table in tables.Keys.ToList())
+        {
+            if (table == "Kohde.KohdeSijainti" || table == "Kohde.OsioSijainti" || table == "Kohde.PisteSijainti")
+            {
+                continue;
+            }
+
+            tasks.Add(Task.Run(async () =>
+            {
+                using var connection = new SqlConnection(connectionString);
+                await connection.OpenAsync();
+                string query = $"SELECT * FROM {table} WHERE {column}={key}";
                 var rows = await connection.QueryAsync(query);
                 var rowList = new List<Dictionary<string, object>>();
 
