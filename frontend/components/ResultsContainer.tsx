@@ -8,6 +8,7 @@ import {
   useDisclosure,
   Flex,
   Text,
+  Box,
 } from '@chakra-ui/react';
 import useResultsStore from '../stores/useResultsStore';
 import CustomTd from './CustomTd';
@@ -34,9 +35,22 @@ const ResultsContainer = () => {
                     <Th key={index}>
                       <Flex direction="column">
                         <Text size="xs">{columnName}</Text>
-                        <Text size="xs" color="yellow.500">
-                          {columnDetails.dataType}
-                        </Text>
+
+                        <Flex>
+                          <Text size="xs" color="yellow.500">
+                            {columnDetails.dataType}
+                          </Text>
+                          {columnDetails.isPK && (
+                            <Text size="xs" color="blue.500" ml={1}>
+                              PK
+                            </Text>
+                          )}
+                          {columnDetails.fkDetails && (
+                            <Text size="xs" color="green.500" ml={1}>
+                              FK
+                            </Text>
+                          )}
+                        </Flex>
                       </Flex>
                     </Th>
                   );
