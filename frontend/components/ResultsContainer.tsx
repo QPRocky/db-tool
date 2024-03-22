@@ -1,4 +1,14 @@
-import { Table, Thead, Tbody, Tr, Td, Th, TableContainer, useDisclosure } from '@chakra-ui/react';
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  TableContainer,
+  useDisclosure,
+  Flex,
+  Text,
+} from '@chakra-ui/react';
 import useResultsStore from '../stores/useResultsStore';
 import CustomTd from './CustomTd';
 import EditModal from './EditModal';
@@ -18,9 +28,20 @@ const ResultsContainer = () => {
         <Table>
           <Thead position="sticky" top={0} zIndex="docked">
             <Tr>
-              {Object.keys(resultTables[selectedTable].columns).map(columnName => {
-                return <Th key={columnName}>{columnName}</Th>;
-              })}
+              {Object.entries(resultTables[selectedTable].columns).map(
+                ([columnName, columnDetails], index) => {
+                  return (
+                    <Th key={index}>
+                      <Flex direction="column">
+                        <Text size="xs">{columnName}</Text>
+                        <Text size="xs" color="yellow.500">
+                          {columnDetails.dataType}
+                        </Text>
+                      </Flex>
+                    </Th>
+                  );
+                },
+              )}
             </Tr>
           </Thead>
 
@@ -31,7 +52,7 @@ const ResultsContainer = () => {
                   {Object.entries(resultTables[selectedTable].columns).map(
                     ([columnName, columnDetails], index) => (
                       <CustomTd
-                        key={`${index}-${columnName}`}
+                        key={index}
                         columnName={columnName}
                         columnDetails={columnDetails}
                         value={row[columnName]}
