@@ -9,6 +9,7 @@ import {
   Flex,
   Text,
   Box,
+  Tooltip,
 } from '@chakra-ui/react';
 import useResultsStore from '../stores/useResultsStore';
 import CustomTd from './CustomTd';
@@ -46,9 +47,22 @@ const ResultsContainer = () => {
                             </Text>
                           )}
                           {columnDetails.fkDetails && (
-                            <Text size="xs" color="green.500" ml={1}>
-                              FK
-                            </Text>
+                            <Tooltip
+                              bg="gray.600"
+                              color="green.400"
+                              fontSize="xs"
+                              fontWeight={900}
+                              label={
+                                columnDetails.fkDetails.referenceTableName +
+                                ' ' +
+                                columnDetails.fkDetails.referenceColumnName
+                              }
+                              aria-label="A tooltip"
+                            >
+                              <Text size="xs" color="green.500" ml={1}>
+                                FK
+                              </Text>
+                            </Tooltip>
                           )}
                         </Flex>
                       </Flex>

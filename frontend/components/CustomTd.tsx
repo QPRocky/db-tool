@@ -8,6 +8,7 @@ import useResultsStore from '../stores/useResultsStore';
 import getCursor from '../utils/getCursor';
 import { useSearchByPrimaryKey } from '../hooks/useSearchByPrimaryKey';
 import { useSearchByForeignKey } from '../hooks/useSearchByForeignKey';
+import useEditColumn from '../stores/useEditColumn';
 
 interface Props {
   columnName: string;
@@ -20,6 +21,7 @@ interface Props {
 const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Props) => {
   const setJsonString = useResultsStore(s => s.setJsonString);
   const selectedTable = useResultsStore(s => s.selectedTable);
+  const setEditDetails = useEditColumn(s => s.setEditDetails);
   const { mutateAsync: searchByPrimaryKey } = useSearchByPrimaryKey();
   const { mutateAsync: searchByForeignKey } = useSearchByForeignKey();
 
@@ -49,6 +51,13 @@ const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Prop
   };
 
   const onEditClick = () => {
+    setEditDetails({
+      tableName: selectedTable!,
+      columnName,
+      primaryKeyName: 'TODO. näitä voi olla useita. esimerkkinä Lomake_Sektori_Rooli',
+      value,
+      columnDetails,
+    });
     onEditOpen();
   };
 

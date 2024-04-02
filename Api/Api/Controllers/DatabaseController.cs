@@ -95,6 +95,33 @@ public class DatabaseController : ControllerBase
         }
     }
 
+    [HttpPost("SaveColumn")]
+    public async Task<IActionResult> SaveColumn(SaveColumnDetails dto)
+    {
+        try
+        {
+            var connectionString = GetConnectionStringFromHeader(Request);
+
+            //await EditColumn(connectionString, dto);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+
+    private static async Task EditColumn(string connectionString, SaveColumnDetails dto)
+    {
+        using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        var sql = "UPDATE Kohde.Kohde SET Yritys = @Yritys WHERE Kohde_ID = @Kohde_ID";
+
+        var affectedRows = await connection.ExecuteAsync(sql, new { Yritys = "aura oy1", Kohde_ID = 10030006 });
+    }
+
     private static async Task<Dictionary<string, TableDetails>> GetTables(string connectionString)
     {
         var tables = new Dictionary<string, TableDetails>();
