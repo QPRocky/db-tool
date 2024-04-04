@@ -9,16 +9,18 @@ import getCursor from '../utils/getCursor';
 import { useSearchByPrimaryKey } from '../hooks/useSearchByPrimaryKey';
 import { useSearchByForeignKey } from '../hooks/useSearchByForeignKey';
 import useEditColumn from '../stores/useEditColumn';
+import PrimaryKeyColumnNameAndValue from '../interfaces/PrimaryKeyColumnNameAndValue';
 
 interface Props {
   columnName: string;
   columnDetails: ColumnDetails;
   value: any;
+  primaryKeyColumnNamesAndValues: PrimaryKeyColumnNameAndValue[];
   onOpen: () => void;
   onEditOpen: () => void;
 }
 
-const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Props) => {
+const CustomTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndValues, onOpen, onEditOpen }: Props) => {
   const setJsonString = useResultsStore(s => s.setJsonString);
   const selectedTable = useResultsStore(s => s.selectedTable);
   const setEditDetails = useEditColumn(s => s.setEditDetails);
@@ -54,9 +56,9 @@ const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Prop
     setEditDetails({
       tableName: selectedTable!,
       columnName,
-      primaryKeyName: 'TODO. näitä voi olla useita. esimerkkinä Lomake_Sektori_Rooli',
       value,
       columnDetails,
+      primaryKeyColumnNamesAndValues,
     });
     onEditOpen();
   };
@@ -64,12 +66,7 @@ const CustomTd = ({ columnName, columnDetails, value, onOpen, onEditOpen }: Prop
   return (
     <Td color={getTextColor(columnDetails, value, isJsonString)}>
       <Flex justify="space-between" align="center">
-        <Flex
-          maxW={'300px'}
-          overflow="hidden"
-          onClick={onClick}
-          cursor={getCursor(columnDetails, isJsonString, value)}
-        >
+        <Flex maxW={'300px'} overflow="hidden" onClick={onClick} cursor={getCursor(columnDetails, isJsonString, value)}>
           {formatValue(columnDetails, value)}
         </Flex>
         {!columnDetails.isPK && (

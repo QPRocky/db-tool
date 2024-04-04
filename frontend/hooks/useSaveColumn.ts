@@ -5,12 +5,13 @@ import Connection from '../interfaces/Connection';
 import baseUrl from '../utils/baseUrl';
 import useResultsStore from '../stores/useResultsStore';
 import { Tables } from '../interfaces/Tables';
+import PrimaryKeyColumnNameAndValue from '../interfaces/PrimaryKeyColumnNameAndValue';
 
 export interface SaveColumnDetails {
   tableName: string;
   columnName: string;
   value: any;
-  dataType: string;
+  primaryKeyColumnNamesAndValues: PrimaryKeyColumnNameAndValue[];
 }
 
 const sendData = async (dto: SaveColumnDetails, activeConnection?: Connection) => {
@@ -24,20 +25,32 @@ const sendData = async (dto: SaveColumnDetails, activeConnection?: Connection) =
 
 export const useSaveColumn = () => {
   const activeConnection = useCurrentConnectionStore(s => s.activeConnection);
-  const selectedTable = useResultsStore(s => s.selectedTable);
-  const setSelectedTable = useResultsStore(s => s.setSelectedTable);
   const setResultTables = useResultsStore(s => s.setResultTables);
+  const resultTables = useResultsStore(s => s.resultTables);
 
   return useMutation({
     mutationFn: (dto: SaveColumnDetails) => sendData(dto, activeConnection),
-    onSuccess: data => {
-      const resetSelectedTable = !selectedTable || !data || !data[selectedTable];
+    onSuccess: (data, dto) => {
+      const modifiedRowItem = resultTables![dto.tableName].rows.find(row => {
+        return dto.primaryKeyColumnNamesAndValues.every(pk => row[pk.columnName] === pk.value);
+      });
 
-      if (resetSelectedTable) {
-        setSelectedTable(undefined);
-      }
+      setResultTables({
+        ...resultTables!,
+        [dto.tableName]: {
+          ...resultTables![dto.tableName],
+          rows: resultTables![dto.tableName].rows.map(row => {
+            if (row === modifiedRowItem) {
+              return {
+                ...row,
+                [dto.columnName]: dto.value,
+              };
+            }
 
-      setResultTables(data);
+            return row;
+          }),
+        },
+      });
     },
     onError: error => {
       console.error(error);

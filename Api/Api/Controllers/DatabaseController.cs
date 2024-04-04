@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace Api.Controllers;
 
@@ -102,7 +103,7 @@ public class DatabaseController : ControllerBase
         {
             var connectionString = GetConnectionStringFromHeader(Request);
 
-            //await EditColumn(connectionString, dto);
+            await EditColumn(connectionString, dto);
 
             return Ok();
         }
@@ -114,12 +115,49 @@ public class DatabaseController : ControllerBase
 
     private static async Task EditColumn(string connectionString, SaveColumnDetails dto)
     {
+        //TODO, jos primary key:t‰ on useita, t‰m‰ ei toimi
+        //esim RaportointiProfiili.Lomake_Sektori_Rooli sis‰lt‰‰ 3 PK
+
         using var connection = new SqlConnection(connectionString);
         await connection.OpenAsync();
 
-        var sql = "UPDATE Kohde.Kohde SET Yritys = @Yritys WHERE Kohde_ID = @Kohde_ID";
+        var value = ConvertJsonElementToObject((JsonElement)dto.Value);
+        var primaryKeyValue = ConvertJsonElementToObject((JsonElement)dto.primaryKeyColumnNamesAndValues[0].Value);
 
-        var affectedRows = await connection.ExecuteAsync(sql, new { Yritys = "aura oy1", Kohde_ID = 10030006 });
+        var sql = $"UPDATE {dto.TableName} SET {dto.ColumnName} = @Value WHERE {dto.primaryKeyColumnNamesAndValues[0].ColumnName} = @PrimaryKeyValue";
+
+        var parameters = new DynamicParameters();
+        parameters.Add("Value", value);
+        parameters.Add("PrimaryKeyValue", primaryKeyValue);
+
+        var affectedRows = await connection.ExecuteAsync(sql, parameters);
+    }
+
+    private static object ConvertJsonElementToObject(JsonElement element)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.True:
+            case JsonValueKind.False:
+                return element.GetBoolean();
+
+            case JsonValueKind.String:
+                return element.GetString();
+
+            case JsonValueKind.Number:
+                if (element.TryGetInt32(out int intValue))
+                {
+                    return intValue;
+                }
+                if (element.TryGetInt64(out long longValue))
+                {
+                    return longValue;
+                }
+                return element.GetDouble(); 
+
+            default:
+                throw new NotSupportedException($"Unsupported JsonValueKind: {element.ValueKind}");
+        }
     }
 
     private static async Task<Dictionary<string, TableDetails>> GetTables(string connectionString)
