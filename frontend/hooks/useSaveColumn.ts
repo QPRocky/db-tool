@@ -6,6 +6,8 @@ import baseUrl from '../utils/baseUrl';
 import useResultsStore from '../stores/useResultsStore';
 import { Tables } from '../interfaces/Tables';
 import PrimaryKeyColumnNameAndValue from '../interfaces/PrimaryKeyColumnNameAndValue';
+import getAxiosError from '../utils/getAxiosError';
+import { useToast } from '@chakra-ui/react';
 
 export interface SaveColumnDetails {
   tableName: string;
@@ -27,6 +29,7 @@ export const useSaveColumn = () => {
   const activeConnection = useCurrentConnectionStore(s => s.activeConnection);
   const setResultTables = useResultsStore(s => s.setResultTables);
   const resultTables = useResultsStore(s => s.resultTables);
+  const toast = useToast();
 
   return useMutation({
     mutationFn: (dto: SaveColumnDetails) => sendData(dto, activeConnection),
@@ -53,7 +56,15 @@ export const useSaveColumn = () => {
       });
     },
     onError: error => {
-      console.error(error);
+      const errorMessage = getAxiosError(error);
+
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        status: 'error',
+        duration: 10000,
+        isClosable: true,
+      });
     },
   });
 };

@@ -9,6 +9,8 @@ import {
   ModalHeader,
   ModalOverlay,
   Checkbox,
+  Flex,
+  Text,
 } from '@chakra-ui/react';
 import useEditColumn from '../stores/useEditColumn';
 import { useSaveColumn } from '../hooks/useSaveColumn';
@@ -26,12 +28,34 @@ const EditModal = ({ isOpen, onClose }: Props) => {
   const saveClick = async () => {
     onClose();
 
-    await saveColumn({
-      tableName: editDetails?.tableName!,
-      columnName: editDetails?.columnName!,
-      value: editDetails?.value,
-      primaryKeyColumnNamesAndValues: editDetails?.primaryKeyColumnNamesAndValues!,
-    });
+    try {
+      await saveColumn({
+        tableName: editDetails?.tableName!,
+        columnName: editDetails?.columnName!,
+        value: editDetails?.value,
+        primaryKeyColumnNamesAndValues: editDetails?.primaryKeyColumnNamesAndValues!,
+      });
+    } catch (error) {}
+  };
+
+  const setToNullClick = async () => {
+    if (editDetails) {
+      setEditDetails({
+        ...editDetails,
+        value: null,
+      });
+    }
+
+    onClose();
+
+    try {
+      await saveColumn({
+        tableName: editDetails?.tableName!,
+        columnName: editDetails?.columnName!,
+        value: null,
+        primaryKeyColumnNamesAndValues: editDetails?.primaryKeyColumnNamesAndValues!,
+      });
+    } catch (error) {}
   };
 
   const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,16 +89,26 @@ const EditModal = ({ isOpen, onClose }: Props) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
-        <ModalHeader>
-          {editDetails?.tableName} {editDetails?.columnName}
-        </ModalHeader>
+        <ModalHeader>Edit</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>{renderInputByDataType(editDetails?.columnDetails.dataType)}</ModalBody>
+        <ModalBody>
+          <Text mb={2}>{editDetails?.columnName}</Text>
+          {renderInputByDataType(editDetails?.columnDetails.dataType)}
+        </ModalBody>
         <ModalFooter>
-          <Button mr={3} onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={saveClick}>Save</Button>
+          <Flex justify="space-between" flex={1}>
+            <Flex>
+              <Button onClick={setToNullClick}>Set to null</Button>
+            </Flex>
+            <Flex>
+              <Button mr={3} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button mr={3} onClick={saveClick}>
+                Save
+              </Button>
+            </Flex>
+          </Flex>
         </ModalFooter>
       </ModalContent>
     </Modal>

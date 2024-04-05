@@ -4,7 +4,6 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
-using System.Diagnostics;
 using System.Text.Json;
 
 namespace Api.Controllers;
@@ -121,7 +120,13 @@ public class DatabaseController : ControllerBase
         using var connection = new SqlConnection(connectionString);
         await connection.OpenAsync();
 
-        var value = ConvertJsonElementToObject((JsonElement)dto.Value);
+        object value = null;
+
+        if (dto.Value != null)
+        {
+            value = ConvertJsonElementToObject((JsonElement)dto.Value);
+        }
+
         var primaryKeyValue = ConvertJsonElementToObject((JsonElement)dto.primaryKeyColumnNamesAndValues[0].Value);
 
         var sql = $"UPDATE {dto.TableName} SET {dto.ColumnName} = @Value WHERE {dto.primaryKeyColumnNamesAndValues[0].ColumnName} = @PrimaryKeyValue";
@@ -153,7 +158,7 @@ public class DatabaseController : ControllerBase
                 {
                     return longValue;
                 }
-                return element.GetDouble(); 
+                return element.GetDouble();
 
             default:
                 throw new NotSupportedException($"Unsupported JsonValueKind: {element.ValueKind}");
