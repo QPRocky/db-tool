@@ -16,23 +16,23 @@ interface Props {
   columnDetails: ColumnDetails;
   value: any;
   primaryKeyColumnNamesAndValues: PrimaryKeyColumnNameAndValue[];
-  onOpen: () => void;
-  onEditOpen: () => void;
 }
 
-const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndValues, onOpen, onEditOpen }: Props) => {
+const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndValues }: Props) => {
   const setJsonString = useResultsStore(s => s.setJsonString);
   const selectedTable = useResultsStore(s => s.selectedTable);
   const setEditDetails = useEditColumn(s => s.setEditDetails);
   const { mutateAsync: searchByPrimaryKey } = useSearchByPrimaryKey();
   const { mutateAsync: searchByForeignKey } = useSearchByForeignKey();
+  const onJsonOpen = useResultsStore(s => s.onJsonOpen);
+  const onEditOpen = useResultsStore(s => s.onEditOpen);
 
   const isJsonString = isJson(value);
 
   const onClick = async () => {
     if (isJsonString) {
       setJsonString(value);
-      onOpen();
+      onJsonOpen();
     }
 
     if (columnDetails.isPK) {

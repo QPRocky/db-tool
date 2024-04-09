@@ -5,8 +5,6 @@ import ResultTd from './ResultTd';
 const ResultsTableBody = () => {
   const selectedTable = useResultsStore(s => s.selectedTable);
   const resultTables = useResultsStore(s => s.resultTables);
-  const onJsonOpen = useResultsStore(s => s.onJsonOpen);
-  const onEditOpen = useResultsStore(s => s.onEditOpen);
 
   if (!selectedTable || !resultTables) return null;
 
@@ -31,8 +29,6 @@ const ResultsTableBody = () => {
                 columnDetails={columnDetails}
                 value={row[columnName]}
                 primaryKeyColumnNamesAndValues={primaryKeyColumnNamesAndValues}
-                onOpen={onJsonOpen}
-                onEditOpen={onEditOpen}
               />
             ))}
           </Tr>
