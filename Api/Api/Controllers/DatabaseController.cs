@@ -43,7 +43,7 @@ public class DatabaseController : ControllerBase
             tables = await GetForeignKeys(connectionString, tables);
             tables = await GetAllData(connectionString, tables);
             tables = DoSearch(searchQuery, tables);
-            tables = RemoveEmptyTables(tables);
+            //tables = RemoveEmptyTables(tables);
 
             return Ok(tables);
         }
@@ -65,7 +65,7 @@ public class DatabaseController : ControllerBase
             tables = await GetForeignKeys(connectionString, tables);
             tables = FilterTablesByTableNameAndColumnName(tables, dto.TableName, dto.ColumnName);
             tables = await GetAllDataByPrimaryKey(connectionString, tables, dto.ColumnName, dto.PrimaryKey);
-            tables = RemoveEmptyTables(tables);
+            //tables = RemoveEmptyTables(tables);
 
             return Ok(tables);
         }

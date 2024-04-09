@@ -6,7 +6,7 @@ import ConnectionIndicator from '../components/ConnectionIndicator';
 import SearchInput from '../components/SearchInput';
 import TablesList from '../components/TablesList';
 import Splitter from '../components/Splitter';
-import ResultsContainer from '../components/ResultsContainer';
+import ResultsContainer from '../components/Results/ResultsContainer';
 
 const SearchPage: NextPage = () => {
   return (

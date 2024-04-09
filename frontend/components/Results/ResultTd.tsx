@@ -1,15 +1,15 @@
 import { Td, Flex } from '@chakra-ui/react';
 import { VscEdit } from 'react-icons/vsc';
-import { ColumnDetails } from '../interfaces/Tables';
-import formatValue from '../utils/formatValue';
-import getTextColor from '../utils/getTextColor';
-import isJson from '../utils/isJson';
-import useResultsStore from '../stores/useResultsStore';
-import getCursor from '../utils/getCursor';
-import { useSearchByPrimaryKey } from '../hooks/useSearchByPrimaryKey';
-import { useSearchByForeignKey } from '../hooks/useSearchByForeignKey';
-import useEditColumn from '../stores/useEditColumn';
-import PrimaryKeyColumnNameAndValue from '../interfaces/PrimaryKeyColumnNameAndValue';
+import { ColumnDetails } from '../../interfaces/Tables';
+import formatValue from '../../utils/formatValue';
+import getTextColor from '../../utils/getTextColor';
+import isJson from '../../utils/isJson';
+import useResultsStore from '../../stores/useResultsStore';
+import getCursor from '../../utils/getCursor';
+import { useSearchByPrimaryKey } from '../../hooks/useSearchByPrimaryKey';
+import { useSearchByForeignKey } from '../../hooks/useSearchByForeignKey';
+import useEditColumn from '../../stores/useEditColumn';
+import PrimaryKeyColumnNameAndValue from '../../interfaces/PrimaryKeyColumnNameAndValue';
 
 interface Props {
   columnName: string;
@@ -20,7 +20,7 @@ interface Props {
   onEditOpen: () => void;
 }
 
-const CustomTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndValues, onOpen, onEditOpen }: Props) => {
+const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndValues, onOpen, onEditOpen }: Props) => {
   const setJsonString = useResultsStore(s => s.setJsonString);
   const selectedTable = useResultsStore(s => s.selectedTable);
   const setEditDetails = useEditColumn(s => s.setEditDetails);
@@ -79,4 +79,4 @@ const CustomTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
   );
 };
 
-export default CustomTd;
+export default ResultTd;

@@ -21,7 +21,7 @@ const TablesList = () => {
           cursor="pointer"
           onClick={() => setSelectedTable(tableName)}
         >
-          <Text fontSize="xs" px={2} py={1}>
+          <Text fontSize="xs" px={2} py={1} color={resultTables[tableName].rows.length === 0 ? 'gray.500' : '#fff'}>
             {tableName}
           </Text>
         </Flex>

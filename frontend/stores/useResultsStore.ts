@@ -5,15 +5,23 @@ interface State {
   selectedTable?: string;
   resultTables?: Tables;
   jsonString: string;
+  isJsonOpen: boolean;
+  isEditOpen: boolean;
   setSelectedTable: (selectedTable?: string) => void;
   setResultTables: (resultTables: Tables) => void;
   setJsonString: (jsonString: string) => void;
+  onJsonOpen: () => void;
+  onJsonClose: () => void;
+  onEditOpen: () => void;
+  onEditClose: () => void;
 }
 
 const useResultsStore = create<State>()(set => ({
   selectedTable: undefined,
   resultTables: undefined,
   jsonString: '',
+  isJsonOpen: false,
+  isEditOpen: false,
 
   setSelectedTable: (selectedTable?: string) =>
     set({
@@ -28,6 +36,26 @@ const useResultsStore = create<State>()(set => ({
   setJsonString: (jsonString: string) =>
     set({
       jsonString,
+    }),
+
+  onJsonOpen: () =>
+    set({
+      isJsonOpen: true,
+    }),
+
+  onJsonClose: () =>
+    set({
+      isJsonOpen: false,
+    }),
+
+  onEditOpen: () =>
+    set({
+      isEditOpen: true,
+    }),
+
+  onEditClose: () =>
+    set({
+      isEditOpen: false,
     }),
 }));
 
