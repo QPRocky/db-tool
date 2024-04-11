@@ -1,20 +1,20 @@
-import { defineStyleConfig } from '@chakra-ui/react'
+import { defineStyleConfig } from '@chakra-ui/react';
 
 const Button = defineStyleConfig({
   sizes: {
     sm: {
-      fontSize: 'xs'
+      fontSize: 'xs',
     },
   },
   variants: {
     solid: {
-      bg: "gray.700"
-    }
+      bg: 'gray.700',
+    },
   },
   defaultProps: {
     size: 'sm',
     variant: 'solid',
   },
-})
+});
 
-export default Button
+export default Button;

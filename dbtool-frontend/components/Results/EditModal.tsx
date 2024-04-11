@@ -98,13 +98,15 @@ const EditModal = ({ isOpen, onClose }: Props) => {
         <ModalFooter>
           <Flex justify="space-between" flex={1}>
             <Flex>
-              <Button onClick={setToNullClick}>Set to null</Button>
+              <Button onClick={setToNullClick} bg="blue.700">
+                Set to null
+              </Button>
             </Flex>
             <Flex>
               <Button mr={3} onClick={onClose}>
                 Cancel
               </Button>
-              <Button mr={3} onClick={saveClick}>
+              <Button mr={3} onClick={saveClick} bg="green.700">
                 Save
               </Button>
             </Flex>

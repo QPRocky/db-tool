@@ -42,7 +42,7 @@ const DeleteModal = ({ isOpen, onClose }: Props) => {
           <Button mr={3} onClick={onClose}>
             Cancel
           </Button>
-          <Button mr={3} onClick={deleteClick}>
+          <Button mr={3} onClick={deleteClick} bg="red.700">
             Delete
           </Button>
         </ModalFooter>

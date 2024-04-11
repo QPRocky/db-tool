@@ -123,14 +123,11 @@ const ConnectionModal = () => {
               isDisabled={isButtonsDisabled()}
               variant="outline"
               onClick={testConnectionClick}
+              bg="blue.700"
             >
               Test connection
             </Button>
-            <Button
-              isDisabled={isButtonsDisabled()}
-              variant="outline"
-              onClick={saveConnectionClick}
-            >
+            <Button isDisabled={isButtonsDisabled()} variant="outline" onClick={saveConnectionClick} bg="green.700">
               Save
             </Button>
           </Flex>
