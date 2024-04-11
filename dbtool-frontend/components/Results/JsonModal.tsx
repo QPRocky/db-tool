@@ -1,13 +1,6 @@
-import {
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-} from '@chakra-ui/react';
+import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 import JsonFormatter from './JsonFormatter';
-import useResultsStore from '../stores/useResultsStore';
+import useResultsStore from '../../stores/useResultsStore';
 
 interface Props {
   isOpen: boolean;

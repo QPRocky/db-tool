@@ -1,12 +1,12 @@
-using Api.Dtos;
-using Api.Models;
+using DbToolApi.Dtos;
+using DbToolApi.Models;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
 using System.Text.Json;
 
-namespace Api.Controllers;
+namespace DbToolApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]

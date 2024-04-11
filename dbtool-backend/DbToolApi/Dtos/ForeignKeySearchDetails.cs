@@ -1,4 +1,4 @@
-﻿namespace Api.Dtos;
+﻿namespace DbToolApi.Dtos;
 
 public class ForeignKeySearchDetails
 {

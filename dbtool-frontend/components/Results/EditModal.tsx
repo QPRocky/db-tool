@@ -12,8 +12,8 @@ import {
   Flex,
   Text,
 } from '@chakra-ui/react';
-import useEditColumn from '../stores/useEditColumn';
-import { useSaveColumn } from '../hooks/useSaveColumn';
+import useEditColumn from '../../stores/useEditColumn';
+import { useSaveColumn } from '../../hooks/useSaveColumn';
 
 interface Props {
   isOpen: boolean;

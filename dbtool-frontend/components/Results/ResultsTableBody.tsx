@@ -1,6 +1,7 @@
 import { Tbody, Tr } from '@chakra-ui/react';
 import useResultsStore from '../../stores/useResultsStore';
 import ResultTd from './ResultTd';
+import DeleteTd from './DeleteTd';
 
 const ResultsTableBody = () => {
   const selectedTable = useResultsStore(s => s.selectedTable);
@@ -22,6 +23,7 @@ const ResultsTableBody = () => {
 
         return (
           <Tr key={index}>
+            <DeleteTd primaryKeyColumnNamesAndValues={primaryKeyColumnNamesAndValues} />
             {Object.entries(resultTables[selectedTable].columns).map(([columnName, columnDetails], index) => (
               <ResultTd
                 key={index}
