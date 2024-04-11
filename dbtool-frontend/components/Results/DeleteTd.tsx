@@ -2,6 +2,7 @@ import { Flex, Td } from '@chakra-ui/react';
 import { VscTrash } from 'react-icons/vsc';
 import useResultsStore from '../../stores/useResultsStore';
 import PrimaryKeyColumnNameAndValue from '../../interfaces/PrimaryKeyColumnNameAndValue';
+import useDeleteRowStore from '../../stores/useDeleteRowStore';
 
 interface Props {
   primaryKeyColumnNamesAndValues: PrimaryKeyColumnNameAndValue[];
@@ -10,13 +11,15 @@ interface Props {
 const DeleteTd = ({ primaryKeyColumnNamesAndValues }: Props) => {
   const selectedTable = useResultsStore(s => s.selectedTable);
   const onDeleteOpen = useResultsStore(s => s.onDeleteOpen);
+  const setDeleteDetails = useDeleteRowStore(s => s.setDeleteDetails);
 
   const onDeleteClick = () => {
-    onDeleteOpen();
-    console.log('Näytä delete modal', {
-      selectedTable,
+    setDeleteDetails({
+      tableName: selectedTable!,
       primaryKeyColumnNamesAndValues,
     });
+
+    onDeleteOpen();
   };
 
   return (

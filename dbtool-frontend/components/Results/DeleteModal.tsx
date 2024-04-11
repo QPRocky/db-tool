@@ -7,10 +7,9 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Text,
 } from '@chakra-ui/react';
-import useEditColumn from '../../stores/useEditColumn';
-import { useSaveColumn } from '../../hooks/useSaveColumn';
+import { useDeleteRow } from '../../hooks/useDeleteRow';
+import useDeleteRowStore from '../../stores/useDeleteRowStore';
 
 interface Props {
   isOpen: boolean;
@@ -18,32 +17,27 @@ interface Props {
 }
 
 const DeleteModal = ({ isOpen, onClose }: Props) => {
-  const editDetails = useEditColumn(s => s.editDetails);
-  //const { mutateAsync: saveColumn } = useSaveColumn();
+  const deleteDetails = useDeleteRowStore(s => s.deleteDetails);
+  const { mutateAsync: deleteRow } = useDeleteRow();
 
   const deleteClick = async () => {
     onClose();
 
-    /*try {
-      await saveColumn({
-        tableName: editDetails?.tableName!,
-        columnName: editDetails?.columnName!,
-        value: editDetails?.value,
-        primaryKeyColumnNamesAndValues: editDetails?.primaryKeyColumnNamesAndValues!,
+    try {
+      await deleteRow({
+        tableName: deleteDetails?.tableName!,
+        primaryKeyColumnNamesAndValues: deleteDetails?.primaryKeyColumnNamesAndValues!,
       });
-    } catch (error) {}*/
+    } catch (error) {}
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
-        <ModalHeader>Delete</ModalHeader>
+        <ModalHeader>Delete row?</ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
-          <Text mb={2}>{editDetails?.columnName}</Text>
-          <Text>TODO DELETE WARNING</Text>
-        </ModalBody>
+        <ModalBody></ModalBody>
         <ModalFooter>
           <Button mr={3} onClick={onClose}>
             Cancel

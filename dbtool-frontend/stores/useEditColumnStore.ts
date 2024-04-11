@@ -15,7 +15,7 @@ interface State {
   setEditDetails: (editDetails?: EditDetails) => void;
 }
 
-const useEditColumn = create<State>()(set => ({
+const useEditColumnStore = create<State>()(set => ({
   editDetails: undefined,
 
   setEditDetails: (editDetails?: EditDetails) =>
@@ -24,4 +24,4 @@ const useEditColumn = create<State>()(set => ({
     }),
 }));
 
-export default useEditColumn;
+export default useEditColumnStore;

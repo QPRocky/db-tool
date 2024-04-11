@@ -12,7 +12,7 @@ import {
   Flex,
   Text,
 } from '@chakra-ui/react';
-import useEditColumn from '../../stores/useEditColumn';
+import useEditColumnStore from '../../stores/useEditColumnStore';
 import { useSaveColumn } from '../../hooks/useSaveColumn';
 
 interface Props {
@@ -21,8 +21,8 @@ interface Props {
 }
 
 const EditModal = ({ isOpen, onClose }: Props) => {
-  const editDetails = useEditColumn(s => s.editDetails);
-  const setEditDetails = useEditColumn(s => s.setEditDetails);
+  const editDetails = useEditColumnStore(s => s.editDetails);
+  const setEditDetails = useEditColumnStore(s => s.setEditDetails);
   const { mutateAsync: saveColumn } = useSaveColumn();
 
   const saveClick = async () => {

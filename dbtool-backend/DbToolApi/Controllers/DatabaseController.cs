@@ -112,6 +112,41 @@ public class DatabaseController : ControllerBase
         }
     }
 
+    [HttpDelete("DeleteRow")]
+    public async Task<IActionResult> DeleteRow(RemoveRowDetails dto)
+    {
+        try
+        {
+            var connectionString = GetConnectionStringFromHeader(Request);
+
+            await DeleteRow(connectionString, dto);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+
+    private static async Task DeleteRow(string connectionString, RemoveRowDetails dto)
+    {
+        //TODO, jos primary key:t‰ on useita, t‰m‰ ei toimi
+        //esim RaportointiProfiili.Lomake_Sektori_Rooli sis‰lt‰‰ 3 PK
+
+        using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        var primaryKeyValue = ConvertJsonElementToObject((JsonElement)dto.primaryKeyColumnNamesAndValues[0].Value);
+         
+        var sql = $"DELETE FROM {dto.TableName} WHERE {dto.primaryKeyColumnNamesAndValues[0].ColumnName} = @PrimaryKeyValue";
+
+        var parameters = new DynamicParameters();
+        parameters.Add("PrimaryKeyValue", primaryKeyValue);
+
+        var affectedRows = await connection.ExecuteAsync(sql, parameters);
+    }
+
     private static async Task EditColumn(string connectionString, SaveColumnDetails dto)
     {
         //TODO, jos primary key:t‰ on useita, t‰m‰ ei toimi
