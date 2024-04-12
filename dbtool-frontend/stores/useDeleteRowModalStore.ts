@@ -8,30 +8,30 @@ interface DeleteDetails {
 
 interface State {
   deleteDetails?: DeleteDetails;
-  isDeleteOpen: boolean;
+  isModalOpen: boolean;
   setDeleteDetails: (deleteDetails?: DeleteDetails) => void;
-  onDeleteOpen: () => void;
-  onDeleteClose: () => void;
+  onModalOpen: () => void;
+  onModalClose: () => void;
 }
 
-const useDeleteRowStore = create<State>()(set => ({
+const useDeleteRowModalStore = create<State>()(set => ({
   deleteDetails: undefined,
-  isDeleteOpen: false,
+  isModalOpen: false,
 
   setDeleteDetails: (deleteDetails?: DeleteDetails) =>
     set({
       deleteDetails,
     }),
 
-  onDeleteOpen: () =>
+  onModalOpen: () =>
     set({
-      isDeleteOpen: true,
+      isModalOpen: true,
     }),
 
-  onDeleteClose: () =>
+  onModalClose: () =>
     set({
-      isDeleteOpen: false,
+      isModalOpen: false,
     }),
 }));
 
-export default useDeleteRowStore;
+export default useDeleteRowModalStore;

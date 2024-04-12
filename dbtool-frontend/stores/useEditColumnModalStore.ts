@@ -12,30 +12,30 @@ interface EditDetails {
 
 interface State {
   editDetails?: EditDetails;
-  isEditOpen: boolean;
+  isModalOpen: boolean;
   setEditDetails: (editDetails?: EditDetails) => void;
-  onEditOpen: () => void;
-  onEditClose: () => void;
+  onModalOpen: () => void;
+  onModalClose: () => void;
 }
 
-const useEditColumnStore = create<State>()(set => ({
+const useEditColumnModalStore = create<State>()(set => ({
   editDetails: undefined,
-  isEditOpen: false,
+  isModalOpen: false,
 
   setEditDetails: (editDetails?: EditDetails) =>
     set({
       editDetails,
     }),
 
-  onEditOpen: () =>
+  onModalOpen: () =>
     set({
-      isEditOpen: true,
+      isModalOpen: true,
     }),
 
-  onEditClose: () =>
+  onModalClose: () =>
     set({
-      isEditOpen: false,
+      isModalOpen: false,
     }),
 }));
 
-export default useEditColumnStore;
+export default useEditColumnModalStore;

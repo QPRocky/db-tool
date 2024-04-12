@@ -12,19 +12,18 @@ import {
   Flex,
   Text,
 } from '@chakra-ui/react';
-import useEditColumnStore from '../../stores/useEditColumnStore';
+import useEditColumnModalStore from '../../stores/useEditColumnModalStore';
 import { useSaveColumn } from '../../hooks/useSaveColumn';
-import useResultsStore from '../../stores/useResultsStore';
 
 const EditModal = () => {
-  const editDetails = useEditColumnStore(s => s.editDetails);
-  const setEditDetails = useEditColumnStore(s => s.setEditDetails);
+  const editDetails = useEditColumnModalStore(s => s.editDetails);
+  const setEditDetails = useEditColumnModalStore(s => s.setEditDetails);
   const { mutateAsync: saveColumn } = useSaveColumn();
-  const isEditOpen = useEditColumnStore(s => s.isEditOpen);
-  const onEditClose = useEditColumnStore(s => s.onEditClose);
+  const isModalOpen = useEditColumnModalStore(s => s.isModalOpen);
+  const onModalClose = useEditColumnModalStore(s => s.onModalClose);
 
   const saveClick = async () => {
-    onEditClose();
+    onModalClose();
 
     try {
       await saveColumn({
@@ -44,7 +43,7 @@ const EditModal = () => {
       });
     }
 
-    onEditClose();
+    onModalClose();
 
     try {
       await saveColumn({
@@ -84,7 +83,7 @@ const EditModal = () => {
   };
 
   return (
-    <Modal isOpen={isEditOpen} onClose={onEditClose}>
+    <Modal isOpen={isModalOpen} onClose={onModalClose}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
         <ModalHeader>Edit</ModalHeader>
@@ -101,7 +100,7 @@ const EditModal = () => {
               </Button>
             </Flex>
             <Flex>
-              <Button mr={3} onClick={onEditClose}>
+              <Button mr={3} onClick={onModalClose}>
                 Cancel
               </Button>
               <Button mr={3} onClick={saveClick} bg="green.700">

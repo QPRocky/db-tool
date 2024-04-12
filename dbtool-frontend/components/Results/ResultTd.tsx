@@ -1,5 +1,4 @@
 import { Td, Flex } from '@chakra-ui/react';
-import { VscEdit } from 'react-icons/vsc';
 import { ColumnDetails } from '../../interfaces/Tables';
 import formatValue from '../../utils/formatValue';
 import getTextColor from '../../utils/getTextColor';
@@ -8,9 +7,9 @@ import useResultsStore from '../../stores/useResultsStore';
 import getCursor from '../../utils/getCursor';
 import { useSearchByPrimaryKey } from '../../hooks/useSearchByPrimaryKey';
 import { useSearchByForeignKey } from '../../hooks/useSearchByForeignKey';
-import useEditColumnStore from '../../stores/useEditColumnStore';
 import PrimaryKeyColumnNameAndValue from '../../interfaces/PrimaryKeyColumnNameAndValue';
-import useJsonStore from '../../stores/useJsonStore';
+import useJsonModalStore from '../../stores/useJsonModalStore';
+import EditColumnButton from './EditColumnButton';
 
 interface Props {
   columnName: string;
@@ -20,20 +19,18 @@ interface Props {
 }
 
 const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndValues }: Props) => {
-  const setJsonString = useJsonStore(s => s.setJsonString);
+  const setJsonString = useJsonModalStore(s => s.setJsonString);
   const selectedTable = useResultsStore(s => s.selectedTable);
-  const setEditDetails = useEditColumnStore(s => s.setEditDetails);
   const { mutateAsync: searchByPrimaryKey } = useSearchByPrimaryKey();
   const { mutateAsync: searchByForeignKey } = useSearchByForeignKey();
-  const onJsonOpen = useJsonStore(s => s.onJsonOpen);
-  const onEditOpen = useEditColumnStore(s => s.onEditOpen);
+  const onModalOpen = useJsonModalStore(s => s.onModalOpen);
 
   const isJsonString = isJson(value);
 
   const onClick = async () => {
     if (isJsonString) {
       setJsonString(value);
-      onJsonOpen();
+      onModalOpen();
     }
 
     if (columnDetails.isPK) {
@@ -53,17 +50,6 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
     }
   };
 
-  const onEditClick = () => {
-    setEditDetails({
-      tableName: selectedTable!,
-      columnName,
-      value,
-      columnDetails,
-      primaryKeyColumnNamesAndValues,
-    });
-    onEditOpen();
-  };
-
   return (
     <Td color={getTextColor(columnDetails, value, isJsonString)}>
       <Flex justify="space-between" align="center">
@@ -72,9 +58,12 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
         </Flex>
         {!columnDetails.isPK && (
           <Flex ml={5}>
-            <Flex onClick={onEditClick} cursor="pointer">
-              <VscEdit color="#aaa" />
-            </Flex>
+            <EditColumnButton
+              columnName={columnName}
+              columnDetails={columnDetails}
+              value={value}
+              primaryKeyColumnNamesAndValues={primaryKeyColumnNamesAndValues}
+            />
           </Flex>
         )}
       </Flex>

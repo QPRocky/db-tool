@@ -9,16 +9,16 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import { useDeleteRow } from '../../hooks/useDeleteRow';
-import useDeleteRowStore from '../../stores/useDeleteRowStore';
+import useDeleteRowModalStore from '../../stores/useDeleteRowModalStore';
 
 const DeleteModal = () => {
-  const deleteDetails = useDeleteRowStore(s => s.deleteDetails);
+  const deleteDetails = useDeleteRowModalStore(s => s.deleteDetails);
   const { mutateAsync: deleteRow } = useDeleteRow();
-  const isDeleteOpen = useDeleteRowStore(s => s.isDeleteOpen);
-  const onDeleteClose = useDeleteRowStore(s => s.onDeleteClose);
+  const isModalOpen = useDeleteRowModalStore(s => s.isModalOpen);
+  const onModalClose = useDeleteRowModalStore(s => s.onModalClose);
 
   const deleteClick = async () => {
-    onDeleteClose();
+    onModalClose();
 
     try {
       await deleteRow({
@@ -29,14 +29,14 @@ const DeleteModal = () => {
   };
 
   return (
-    <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
+    <Modal isOpen={isModalOpen} onClose={onModalClose}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
         <ModalHeader>Delete row?</ModalHeader>
         <ModalCloseButton />
         <ModalBody></ModalBody>
         <ModalFooter>
-          <Button mr={3} onClick={onDeleteClose}>
+          <Button mr={3} onClick={onModalClose}>
             Cancel
           </Button>
           <Button mr={3} onClick={deleteClick} bg="red.700">

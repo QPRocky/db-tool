@@ -2,7 +2,7 @@ import { Flex, Td } from '@chakra-ui/react';
 import { VscTrash } from 'react-icons/vsc';
 import useResultsStore from '../../stores/useResultsStore';
 import PrimaryKeyColumnNameAndValue from '../../interfaces/PrimaryKeyColumnNameAndValue';
-import useDeleteRowStore from '../../stores/useDeleteRowStore';
+import useDeleteRowModalStore from '../../stores/useDeleteRowModalStore';
 
 interface Props {
   primaryKeyColumnNamesAndValues: PrimaryKeyColumnNameAndValue[];
@@ -10,8 +10,8 @@ interface Props {
 
 const DeleteTd = ({ primaryKeyColumnNamesAndValues }: Props) => {
   const selectedTable = useResultsStore(s => s.selectedTable);
-  const onDeleteOpen = useDeleteRowStore(s => s.onDeleteOpen);
-  const setDeleteDetails = useDeleteRowStore(s => s.setDeleteDetails);
+  const onModalOpen = useDeleteRowModalStore(s => s.onModalOpen);
+  const setDeleteDetails = useDeleteRowModalStore(s => s.setDeleteDetails);
 
   const onDeleteClick = () => {
     setDeleteDetails({
@@ -19,7 +19,7 @@ const DeleteTd = ({ primaryKeyColumnNamesAndValues }: Props) => {
       primaryKeyColumnNamesAndValues,
     });
 
-    onDeleteOpen();
+    onModalOpen();
   };
 
   return (
