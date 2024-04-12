@@ -1,5 +1,5 @@
 import { Box, VStack } from '@chakra-ui/react';
-import { VscSearch, VscGitCompare, VscCombine, VscSettingsGear } from 'react-icons/vsc';
+import { VscSearch, VscGitCompare, VscNote, VscSettingsGear } from 'react-icons/vsc';
 import NavigationItem from './NavigationItem';
 
 export const NAV_ITEM_SIZE = '50px';
@@ -10,7 +10,7 @@ const Navigation = () => {
       <VStack spacing={0}>
         <NavigationItem label="Search" href="Search" icon={VscSearch} />
         <NavigationItem label="Track" href="Track" icon={VscGitCompare} />
-        {/* <NavigationItem label="ER Diagram" href="ERDiagram" icon={VscCombine} /> */}
+        <NavigationItem label="Notes" href="Notes" icon={VscNote} />
         <NavigationItem label="Settings" href="Settings" icon={VscSettingsGear} />
       </VStack>
     </Box>

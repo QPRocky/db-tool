@@ -27,11 +27,10 @@ const ConnectionModal = () => {
   const [connectionName, setConnectionName] = useState('');
   const [connectionString, setConnectionString] = useState('');
   const toast = useToast();
-  const [isLoading, setIsLoading] = useState(false);
   const isConnectionModalOpen = useEditConnectionStore(s => s.isConnectionModalOpen);
   const setConnectionModalClose = useEditConnectionStore(s => s.setConnectionModalClose);
   const editConnectionItem = useEditConnectionStore(s => s.editConnectionItem);
-  const { refetch: testConnection } = useTestConnection(connectionString);
+  const { refetch: testConnection, isLoading } = useTestConnection(connectionString);
 
   useEffect(() => {
     if (editConnectionItem) {
@@ -65,8 +64,6 @@ const ConnectionModal = () => {
   };
 
   const testConnectionClick = async () => {
-    setIsLoading(true);
-
     const { error } = await testConnection();
 
     toast({
@@ -76,8 +73,6 @@ const ConnectionModal = () => {
       duration: error ? 10000 : 3000,
       isClosable: true,
     });
-
-    setIsLoading(false);
   };
 
   const options: { value: ConnectionType; label: string }[] = [
