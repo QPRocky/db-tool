@@ -20,8 +20,8 @@ const EditModal = () => {
   const editDetails = useEditColumnStore(s => s.editDetails);
   const setEditDetails = useEditColumnStore(s => s.setEditDetails);
   const { mutateAsync: saveColumn } = useSaveColumn();
-  const isEditOpen = useResultsStore(s => s.isEditOpen);
-  const onEditClose = useResultsStore(s => s.onEditClose);
+  const isEditOpen = useEditColumnStore(s => s.isEditOpen);
+  const onEditClose = useEditColumnStore(s => s.onEditClose);
 
   const saveClick = async () => {
     onEditClose();

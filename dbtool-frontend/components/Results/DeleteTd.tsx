@@ -10,7 +10,7 @@ interface Props {
 
 const DeleteTd = ({ primaryKeyColumnNamesAndValues }: Props) => {
   const selectedTable = useResultsStore(s => s.selectedTable);
-  const onDeleteOpen = useResultsStore(s => s.onDeleteOpen);
+  const onDeleteOpen = useDeleteRowStore(s => s.onDeleteOpen);
   const setDeleteDetails = useDeleteRowStore(s => s.setDeleteDetails);
 
   const onDeleteClick = () => {

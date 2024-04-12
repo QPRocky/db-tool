@@ -1,13 +1,14 @@
 import React from 'react';
 import { Flex, Button } from '@chakra-ui/react';
 import useResultsStore from '../../stores/useResultsStore';
+import useAddRowModalStore from '../../stores/useAddRowModalStore';
 
 const AddRowButton = () => {
   const selectedTable = useResultsStore(s => s.selectedTable);
-  const onAddRowOpen = useResultsStore(s => s.onAddRowOpen);
+  const onModalOpen = useAddRowModalStore(s => s.onModalOpen);
 
   const onClick = () => {
-    onAddRowOpen();
+    onModalOpen();
   };
 
   if (!selectedTable) return null;

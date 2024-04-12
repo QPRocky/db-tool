@@ -1,11 +1,11 @@
 import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 import JsonFormatter from './JsonFormatter';
-import useResultsStore from '../../stores/useResultsStore';
+import useJsonStore from '../../stores/useJsonStore';
 
 const JsonModal = () => {
-  const jsonString = useResultsStore(s => s.jsonString);
-  const isJsonOpen = useResultsStore(s => s.isJsonOpen);
-  const onJsonClose = useResultsStore(s => s.onJsonClose);
+  const jsonString = useJsonStore(s => s.jsonString);
+  const isJsonOpen = useJsonStore(s => s.isJsonOpen);
+  const onJsonClose = useJsonStore(s => s.onJsonClose);
 
   if (jsonString === '') return null;
 

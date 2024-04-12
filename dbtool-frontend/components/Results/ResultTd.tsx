@@ -10,6 +10,7 @@ import { useSearchByPrimaryKey } from '../../hooks/useSearchByPrimaryKey';
 import { useSearchByForeignKey } from '../../hooks/useSearchByForeignKey';
 import useEditColumnStore from '../../stores/useEditColumnStore';
 import PrimaryKeyColumnNameAndValue from '../../interfaces/PrimaryKeyColumnNameAndValue';
+import useJsonStore from '../../stores/useJsonStore';
 
 interface Props {
   columnName: string;
@@ -19,13 +20,13 @@ interface Props {
 }
 
 const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndValues }: Props) => {
-  const setJsonString = useResultsStore(s => s.setJsonString);
+  const setJsonString = useJsonStore(s => s.setJsonString);
   const selectedTable = useResultsStore(s => s.selectedTable);
   const setEditDetails = useEditColumnStore(s => s.setEditDetails);
   const { mutateAsync: searchByPrimaryKey } = useSearchByPrimaryKey();
   const { mutateAsync: searchByForeignKey } = useSearchByForeignKey();
-  const onJsonOpen = useResultsStore(s => s.onJsonOpen);
-  const onEditOpen = useResultsStore(s => s.onEditOpen);
+  const onJsonOpen = useJsonStore(s => s.onJsonOpen);
+  const onEditOpen = useEditColumnStore(s => s.onEditOpen);
 
   const isJsonString = isJson(value);
 

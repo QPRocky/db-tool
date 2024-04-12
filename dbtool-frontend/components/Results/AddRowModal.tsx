@@ -8,16 +8,14 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import { useDeleteRow } from '../../hooks/useDeleteRow';
-import useDeleteRowStore from '../../stores/useDeleteRowStore';
-import useResultsStore from '../../stores/useResultsStore';
+import useAddRowModalStore from '../../stores/useAddRowModalStore';
 
 const AddRowModal = () => {
-  const isAddRowOpen = useResultsStore(s => s.isAddRowOpen);
-  const onAddRowClose = useResultsStore(s => s.onAddRowClose);
+  const isModalOpen = useAddRowModalStore(s => s.isModalOpen);
+  const onModalClose = useAddRowModalStore(s => s.onModalClose);
 
   const addClick = async () => {
-    onAddRowClose();
+    onModalClose();
 
     /*try {
       await deleteRow({
@@ -28,14 +26,14 @@ const AddRowModal = () => {
   };
 
   return (
-    <Modal isOpen={isAddRowOpen} onClose={onAddRowClose}>
+    <Modal isOpen={isModalOpen} onClose={onModalClose}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
         <ModalHeader>Add row</ModalHeader>
         <ModalCloseButton />
         <ModalBody></ModalBody>
         <ModalFooter>
-          <Button mr={3} onClick={onAddRowClose}>
+          <Button mr={3} onClick={onModalClose}>
             Cancel
           </Button>
           <Button mr={3} onClick={addClick} bg="red.700">

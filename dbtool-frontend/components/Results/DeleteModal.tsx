@@ -10,13 +10,12 @@ import {
 } from '@chakra-ui/react';
 import { useDeleteRow } from '../../hooks/useDeleteRow';
 import useDeleteRowStore from '../../stores/useDeleteRowStore';
-import useResultsStore from '../../stores/useResultsStore';
 
 const DeleteModal = () => {
   const deleteDetails = useDeleteRowStore(s => s.deleteDetails);
   const { mutateAsync: deleteRow } = useDeleteRow();
-  const isDeleteOpen = useResultsStore(s => s.isDeleteOpen);
-  const onDeleteClose = useResultsStore(s => s.onDeleteClose);
+  const isDeleteOpen = useDeleteRowStore(s => s.isDeleteOpen);
+  const onDeleteClose = useDeleteRowStore(s => s.onDeleteClose);
 
   const deleteClick = async () => {
     onDeleteClose();
