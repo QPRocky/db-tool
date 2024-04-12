@@ -5,19 +5,26 @@ import Connection from '../interfaces/Connection';
 import usePersistConnectionsStore from '../stores/usePersistConnectionsStore ';
 import useCurrentConnectionStore from '../stores/useCurrentConnectionStore';
 import useEditConnectionStore from '../stores/useEditConnectionStore';
+import useDeleteConnectionStore from '../stores/useDeleteConnectionStore';
 
 const ConnectionsContainer = () => {
   const connections = usePersistConnectionsStore(s => s.connections);
-  const deleteConnection = usePersistConnectionsStore(s => s.deleteConnection);
   const setEditConnectionItem = useEditConnectionStore(s => s.setEditConnectionItem);
   const activeConnection = useCurrentConnectionStore(s => s.activeConnection);
   const setAsDisconnected = useCurrentConnectionStore(s => s.setAsDisconnected);
   const setAsConnected = useCurrentConnectionStore(s => s.setAsConnected);
   const setConnectionModalOpen = useEditConnectionStore(s => s.setConnectionModalOpen);
+  const setConnectionItemToDelete = useDeleteConnectionStore(s => s.setConnectionItemToDelete);
+  const setDeleteConnectionModalOpen = useDeleteConnectionStore(s => s.setDeleteConnectionModalOpen);
 
   const onEditClick = (connection: Connection) => {
     setEditConnectionItem(connection);
     setConnectionModalOpen();
+  };
+
+  const onDeleteClick = (connection: Connection) => {
+    setConnectionItemToDelete(connection);
+    setDeleteConnectionModalOpen();
   };
 
   const onConnectClick = (connection: Connection) => {
@@ -38,10 +45,7 @@ const ConnectionsContainer = () => {
         {connections.map(c => (
           <Flex key={c.uid} justify="space-between" py={1}>
             <Flex align="center">
-              <Text
-                fontSize="xs"
-                color={activeConnection?.connectionName === c.connectionName ? '#0f0' : '#fff'}
-              >
+              <Text fontSize="xs" color={activeConnection?.connectionName === c.connectionName ? '#0f0' : '#fff'}>
                 {c.connectionName}
               </Text>
             </Flex>
@@ -50,7 +54,7 @@ const ConnectionsContainer = () => {
                 <VscEdit cursor="pointer" onClick={() => onEditClick(c)} />
               </Box>
               <Box ml={2}>
-                <VscTrash cursor="pointer" onClick={() => deleteConnection(c)} />
+                <VscTrash cursor="pointer" onClick={() => onDeleteClick(c)} />
               </Box>
               {activeConnection?.connectionName === c.connectionName ? (
                 <Box ml={2}>

@@ -3,6 +3,7 @@ import { NextPage } from 'next';
 import MainContainer from '../components/MainContainer';
 import ConnectionModal from '../components/ConnectionModal';
 import ConnectionsContainer from '../components/ConnectionsContainer';
+import DeleteConnectionModal from '../components/DeleteConnectionModal';
 
 const SettingsPage: NextPage = () => {
   return (
@@ -12,6 +13,7 @@ const SettingsPage: NextPage = () => {
       </MainContainer>
 
       <ConnectionModal />
+      <DeleteConnectionModal />
     </>
   );
 };
