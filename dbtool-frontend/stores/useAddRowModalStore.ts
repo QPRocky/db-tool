@@ -1,18 +1,23 @@
 import { create } from 'zustand';
 
+export interface NewRowColumnDetails {
+  columnName: string;
+  dataType: string;
+  columnValue: any;
+}
+
 interface State {
-  text?: string;
+  columns?: NewRowColumnDetails[];
   isModalOpen: boolean;
-  setText: (text?: string) => void;
   onModalOpen: () => void;
   onModalClose: () => void;
+  updateColumn: (columnName: string, columnValue: any) => void;
+  initColumns: (columns: NewRowColumnDetails[]) => void;
 }
 
 const useAddRowModalStore = create<State>()(set => ({
-  test: undefined,
+  columns: undefined,
   isModalOpen: false,
-
-  setText: (text?: string) => set({ text }),
 
   onModalOpen: () =>
     set({
@@ -22,6 +27,29 @@ const useAddRowModalStore = create<State>()(set => ({
   onModalClose: () =>
     set({
       isModalOpen: false,
+    }),
+
+  updateColumn: (columnName: string, columnValue: any) =>
+    set(state => {
+      const newColumns = state.columns!.map(column => {
+        if (column.columnName === columnName) {
+          return {
+            ...column,
+            columnValue,
+          };
+        }
+
+        return column;
+      });
+
+      return {
+        columns: newColumns,
+      };
+    }),
+
+  initColumns: (columns: NewRowColumnDetails[]) =>
+    set({
+      columns,
     }),
 }));
 

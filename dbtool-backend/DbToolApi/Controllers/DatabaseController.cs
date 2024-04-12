@@ -112,6 +112,23 @@ public class DatabaseController : ControllerBase
         }
     }
 
+    [HttpPost("AddRow")]
+    public async Task<IActionResult> AddRow(AddRowRequest dto)
+    {
+        try
+        {
+            var connectionString = GetConnectionStringFromHeader(Request);
+
+            await AddRow(connectionString, dto);
+
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+    
     [HttpDelete("DeleteRow")]
     public async Task<IActionResult> DeleteRow(RemoveRowDetails dto)
     {
@@ -131,18 +148,27 @@ public class DatabaseController : ControllerBase
 
     private static async Task DeleteRow(string connectionString, RemoveRowDetails dto)
     {
-        //TODO, jos primary key:t‰ on useita, t‰m‰ ei toimi
-        //esim RaportointiProfiili.Lomake_Sektori_Rooli sis‰lt‰‰ 3 PK
-
         using var connection = new SqlConnection(connectionString);
         await connection.OpenAsync();
 
-        var primaryKeyValue = ConvertJsonElementToObject((JsonElement)dto.primaryKeyColumnNamesAndValues[0].Value);
-         
-        var sql = $"DELETE FROM {dto.TableName} WHERE {dto.primaryKeyColumnNamesAndValues[0].ColumnName} = @PrimaryKeyValue";
+        var primaryKeyValues = new Dictionary<string, object>();
+
+        foreach (var pk in dto.primaryKeyColumnNamesAndValues)
+        {
+            var value = ConvertJsonElementToObject((JsonElement)pk.Value);
+            primaryKeyValues.Add(pk.ColumnName, value);
+        }
+
+        var whereClause = string.Join(" AND ", primaryKeyValues.Select(kvp => $"{kvp.Key} = @{kvp.Key}"));
+
+        var sql = $"DELETE FROM {dto.TableName} WHERE {whereClause}";
 
         var parameters = new DynamicParameters();
-        parameters.Add("PrimaryKeyValue", primaryKeyValue);
+
+        foreach (var kvp in primaryKeyValues)
+        {
+            parameters.Add(kvp.Key, kvp.Value);
+        }
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters);
     }
@@ -169,6 +195,27 @@ public class DatabaseController : ControllerBase
         var parameters = new DynamicParameters();
         parameters.Add("Value", value);
         parameters.Add("PrimaryKeyValue", primaryKeyValue);
+
+        var affectedRows = await connection.ExecuteAsync(sql, parameters);
+    }
+
+    private static async Task AddRow(string connectionString, AddRowRequest dto)
+    {
+        using var connection = new SqlConnection(connectionString);
+        await connection.OpenAsync();
+
+        var columnNames = string.Join(", ", dto.Columns.Select(c => c.ColumnName));
+        var columnValues = string.Join(", ", dto.Columns.Select(c => $"@{c.ColumnName}"));
+
+        var sql = $"INSERT INTO {dto.TableName} ({columnNames}) VALUES ({columnValues})";
+
+        var parameters = new DynamicParameters();
+
+        foreach (var column in dto.Columns)
+        {
+            var value = ConvertJsonElementToObject((JsonElement)column.ColumnValue);
+            parameters.Add(column.ColumnName, value);
+        }
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters);
     }

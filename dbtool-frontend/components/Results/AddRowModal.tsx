@@ -9,29 +9,43 @@ import {
   ModalOverlay,
 } from '@chakra-ui/react';
 import useAddRowModalStore from '../../stores/useAddRowModalStore';
+import useResultsStore from '../../stores/useResultsStore';
+import InsertInput from './InsertInput';
+import { useAddRow } from '../../hooks/useAddRow';
 
 const AddRowModal = () => {
   const isModalOpen = useAddRowModalStore(s => s.isModalOpen);
   const onModalClose = useAddRowModalStore(s => s.onModalClose);
+  const selectedTable = useResultsStore(s => s.selectedTable);
+  const columns = useAddRowModalStore(s => s.columns);
+  const { mutateAsync: addRow } = useAddRow();
 
   const addClick = async () => {
+    if (!selectedTable || !columns) return;
+
     onModalClose();
 
-    /*try {
-      await deleteRow({
-        tableName: deleteDetails?.tableName!,
-        primaryKeyColumnNamesAndValues: deleteDetails?.primaryKeyColumnNamesAndValues!,
+    try {
+      await addRow({
+        tableName: selectedTable,
+        columns,
       });
-    } catch (error) {}*/
+    } catch (error) {}
   };
+
+  if (!selectedTable || !columns) return null;
 
   return (
     <Modal isOpen={isModalOpen} onClose={onModalClose}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
-        <ModalHeader>Add row</ModalHeader>
+        <ModalHeader>Add row to {selectedTable}</ModalHeader>
         <ModalCloseButton />
-        <ModalBody></ModalBody>
+        <ModalBody>
+          {columns.map((column, index) => (
+            <InsertInput key={index} columnDetails={column} />
+          ))}
+        </ModalBody>
         <ModalFooter>
           <Button mr={3} onClick={onModalClose}>
             Cancel
