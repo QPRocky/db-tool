@@ -10,7 +10,6 @@ import { useSearchByPrimaryKey } from '../../hooks/useSearchByPrimaryKey';
 import { useSearchByForeignKey } from '../../hooks/useSearchByForeignKey';
 import useEditColumnStore from '../../stores/useEditColumnStore';
 import PrimaryKeyColumnNameAndValue from '../../interfaces/PrimaryKeyColumnNameAndValue';
-import CopyToClipboard from './CopyToClipboard';
 
 interface Props {
   columnName: string;
@@ -71,9 +70,8 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
           {formatValue(columnDetails, value)}
         </Flex>
         {!columnDetails.isPK && (
-          <Flex>
-            <CopyToClipboard value={value} />
-            <Flex ml={1} onClick={onEditClick} cursor="pointer">
+          <Flex ml={5}>
+            <Flex onClick={onEditClick} cursor="pointer">
               <VscEdit color="#aaa" />
             </Flex>
           </Flex>

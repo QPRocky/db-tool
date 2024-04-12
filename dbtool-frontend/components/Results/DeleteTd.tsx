@@ -25,7 +25,7 @@ const DeleteTd = ({ primaryKeyColumnNamesAndValues }: Props) => {
   return (
     <Td>
       <Flex onClick={onDeleteClick} cursor="pointer">
-        <VscTrash color="#fff" />
+        <VscTrash color="#aaa" />
       </Flex>
     </Td>
   );
