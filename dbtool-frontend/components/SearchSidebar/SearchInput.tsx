@@ -1,9 +1,9 @@
 import { Input, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
-import useCurrentConnectionStore from '../stores/useCurrentConnectionStore';
-import getAxiosError from '../utils/getAxiosError';
-import useResultsStore from '../stores/useResultsStore';
-import { useSeach } from '../hooks/useSeach';
+import useCurrentConnectionStore from '../../stores/useCurrentConnectionStore';
+import getAxiosError from '../../utils/getAxiosError';
+import useResultsStore from '../../stores/useResultsStore';
+import { useSeach } from '../../hooks/useSeach';
 
 const SearchInput = () => {
   const [searchValue, setSearchValue] = useState('');

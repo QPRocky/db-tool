@@ -8,8 +8,8 @@ import {
   ModalHeader,
   ModalOverlay,
 } from '@chakra-ui/react';
-import useDeleteConnectionStore from '../stores/useDeleteConnectionStore';
-import usePersistConnectionsStore from '../stores/usePersistConnectionsStore ';
+import useDeleteConnectionStore from '../../stores/useDeleteConnectionStore';
+import usePersistConnectionsStore from '../../stores/usePersistConnectionsStore ';
 
 const DeleteConnectionModal = () => {
   const isDeleteConnectionModalOpen = useDeleteConnectionStore(s => s.isDeleteConnectionModalOpen);

@@ -1,5 +1,5 @@
 import { Flex, Text } from '@chakra-ui/react';
-import useResultsStore from '../stores/useResultsStore';
+import useResultsStore from '../../stores/useResultsStore';
 
 const TablesList = () => {
   const resultTables = useResultsStore(s => s.resultTables);

@@ -2,9 +2,9 @@ import { Box, Flex } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import MainContainer from '../components/MainContainer';
 import { Resplit } from 'react-resplit';
-import ConnectionIndicator from '../components/ConnectionIndicator';
-import SearchInput from '../components/SearchInput';
-import TablesList from '../components/TablesList';
+import ConnectionIndicator from '../components/SearchSidebar/ConnectionIndicator';
+import SearchInput from '../components/SearchSidebar/SearchInput';
+import TablesList from '../components/SearchSidebar/TablesList';
 import Splitter from '../components/Splitter';
 import ResultsContainer from '../components/Results/ResultsContainer';
 
