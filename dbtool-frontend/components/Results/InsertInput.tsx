@@ -9,9 +9,14 @@ const InsertInput = ({ columnDetails }: Props) => {
   const updateColumn = useAddRowModalStore(s => s.updateColumn);
 
   return (
-    <Flex direction="column">
-      <Text>{columnDetails.columnName}</Text>
-      <Text>{columnDetails.dataType}</Text>
+    <Flex direction="column" mb={3}>
+      <Flex mb={1}>
+        <Text fontSize="xs">{columnDetails.columnName}</Text>
+        <Text fontSize="xs" color="yellow.500" ml={1}>
+          {columnDetails.dataType}
+        </Text>
+      </Flex>
+
       <Input value={columnDetails.columnValue} onChange={e => updateColumn(columnDetails.columnName, e.target.value)} />
     </Flex>
   );

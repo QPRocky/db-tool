@@ -23,13 +23,13 @@ const AddRowModal = () => {
   const addClick = async () => {
     if (!selectedTable || !columns) return;
 
-    onModalClose();
-
     try {
       await addRow({
         tableName: selectedTable,
         columns,
       });
+
+      onModalClose();
     } catch (error) {}
   };
 
@@ -38,7 +38,7 @@ const AddRowModal = () => {
   return (
     <Modal isOpen={isModalOpen} onClose={onModalClose}>
       <ModalOverlay />
-      <ModalContent bg="#1a1f2c">
+      <ModalContent>
         <ModalHeader>Add row to {selectedTable}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
