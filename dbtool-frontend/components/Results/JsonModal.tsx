@@ -2,20 +2,17 @@ import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOve
 import JsonFormatter from './JsonFormatter';
 import useResultsStore from '../../stores/useResultsStore';
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const JsonModal = ({ isOpen, onClose }: Props) => {
+const JsonModal = () => {
   const jsonString = useResultsStore(s => s.jsonString);
+  const isJsonOpen = useResultsStore(s => s.isJsonOpen);
+  const onJsonClose = useResultsStore(s => s.onJsonClose);
 
   if (jsonString === '') return null;
 
   const json = JSON.stringify(JSON.parse(jsonString), null, 2);
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={'full'}>
+    <Modal isOpen={isJsonOpen} onClose={onJsonClose} size={'full'}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
         <ModalHeader></ModalHeader>

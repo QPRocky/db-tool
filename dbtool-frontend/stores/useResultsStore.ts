@@ -8,6 +8,7 @@ interface State {
   isJsonOpen: boolean;
   isEditOpen: boolean;
   isDeleteOpen: boolean;
+  isAddRowOpen: boolean;
   setSelectedTable: (selectedTable?: string) => void;
   setResultTables: (resultTables: Tables) => void;
   setJsonString: (jsonString: string) => void;
@@ -17,6 +18,8 @@ interface State {
   onEditClose: () => void;
   onDeleteOpen: () => void;
   onDeleteClose: () => void;
+  onAddRowOpen: () => void;
+  onAddRowClose: () => void;
 }
 
 const useResultsStore = create<State>()(set => ({
@@ -26,6 +29,7 @@ const useResultsStore = create<State>()(set => ({
   isJsonOpen: false,
   isEditOpen: false,
   isDeleteOpen: false,
+  isAddRowOpen: false,
 
   setSelectedTable: (selectedTable?: string) =>
     set({
@@ -70,6 +74,16 @@ const useResultsStore = create<State>()(set => ({
   onDeleteClose: () =>
     set({
       isDeleteOpen: false,
+    }),
+
+  onAddRowOpen: () =>
+    set({
+      isAddRowOpen: true,
+    }),
+
+  onAddRowClose: () =>
+    set({
+      isAddRowOpen: false,
     }),
 }));
 

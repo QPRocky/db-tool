@@ -12,36 +12,34 @@ import { useDeleteRow } from '../../hooks/useDeleteRow';
 import useDeleteRowStore from '../../stores/useDeleteRowStore';
 import useResultsStore from '../../stores/useResultsStore';
 
-const DeleteModal = () => {
-  const deleteDetails = useDeleteRowStore(s => s.deleteDetails);
-  const { mutateAsync: deleteRow } = useDeleteRow();
-  const isDeleteOpen = useResultsStore(s => s.isDeleteOpen);
-  const onDeleteClose = useResultsStore(s => s.onDeleteClose);
+const AddRowModal = () => {
+  const isAddRowOpen = useResultsStore(s => s.isAddRowOpen);
+  const onAddRowClose = useResultsStore(s => s.onAddRowClose);
 
-  const deleteClick = async () => {
-    onDeleteClose();
+  const addClick = async () => {
+    onAddRowClose();
 
-    try {
+    /*try {
       await deleteRow({
         tableName: deleteDetails?.tableName!,
         primaryKeyColumnNamesAndValues: deleteDetails?.primaryKeyColumnNamesAndValues!,
       });
-    } catch (error) {}
+    } catch (error) {}*/
   };
 
   return (
-    <Modal isOpen={isDeleteOpen} onClose={onDeleteClose}>
+    <Modal isOpen={isAddRowOpen} onClose={onAddRowClose}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
-        <ModalHeader>Delete row?</ModalHeader>
+        <ModalHeader>Add row</ModalHeader>
         <ModalCloseButton />
         <ModalBody></ModalBody>
         <ModalFooter>
-          <Button mr={3} onClick={onDeleteClose}>
+          <Button mr={3} onClick={onAddRowClose}>
             Cancel
           </Button>
-          <Button mr={3} onClick={deleteClick} bg="red.700">
-            Delete
+          <Button mr={3} onClick={addClick} bg="red.700">
+            Save
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -49,4 +47,4 @@ const DeleteModal = () => {
   );
 };
 
-export default DeleteModal;
+export default AddRowModal;

@@ -14,19 +14,17 @@ import {
 } from '@chakra-ui/react';
 import useEditColumnStore from '../../stores/useEditColumnStore';
 import { useSaveColumn } from '../../hooks/useSaveColumn';
+import useResultsStore from '../../stores/useResultsStore';
 
-interface Props {
-  isOpen: boolean;
-  onClose: () => void;
-}
-
-const EditModal = ({ isOpen, onClose }: Props) => {
+const EditModal = () => {
   const editDetails = useEditColumnStore(s => s.editDetails);
   const setEditDetails = useEditColumnStore(s => s.setEditDetails);
   const { mutateAsync: saveColumn } = useSaveColumn();
+  const isEditOpen = useResultsStore(s => s.isEditOpen);
+  const onEditClose = useResultsStore(s => s.onEditClose);
 
   const saveClick = async () => {
-    onClose();
+    onEditClose();
 
     try {
       await saveColumn({
@@ -46,7 +44,7 @@ const EditModal = ({ isOpen, onClose }: Props) => {
       });
     }
 
-    onClose();
+    onEditClose();
 
     try {
       await saveColumn({
@@ -86,7 +84,7 @@ const EditModal = ({ isOpen, onClose }: Props) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isEditOpen} onClose={onEditClose}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
         <ModalHeader>Edit</ModalHeader>
@@ -103,7 +101,7 @@ const EditModal = ({ isOpen, onClose }: Props) => {
               </Button>
             </Flex>
             <Flex>
-              <Button mr={3} onClick={onClose}>
+              <Button mr={3} onClick={onEditClose}>
                 Cancel
               </Button>
               <Button mr={3} onClick={saveClick} bg="green.700">
