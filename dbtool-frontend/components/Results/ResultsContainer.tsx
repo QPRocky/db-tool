@@ -8,7 +8,7 @@ import AddRowModal from './AddRowModal';
 
 const ResultsContainer = () => {
   return (
-    <Flex direction="column">
+    <Flex direction="column" overflowX="auto">
       <AddRowButton />
       <ResultsTable />
       <JsonModal />
