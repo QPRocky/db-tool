@@ -56,7 +56,7 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
         <Flex maxW={'300px'} overflow="hidden" onClick={onClick} cursor={getCursor(columnDetails, isJsonString, value)}>
           {formatValue(columnDetails, value)}
         </Flex>
-        {!columnDetails.isPK && (
+        {!columnDetails.isIdentity && (
           <Flex ml={5}>
             <EditColumnButton
               columnName={columnName}
