@@ -23,8 +23,6 @@ const EditModal = () => {
   const onModalClose = useEditColumnModalStore(s => s.onModalClose);
 
   const saveClick = async () => {
-    onModalClose();
-
     try {
       await saveColumn({
         tableName: editDetails?.tableName!,
@@ -32,6 +30,8 @@ const EditModal = () => {
         value: editDetails?.value,
         primaryKeyColumnNamesAndValues: editDetails?.primaryKeyColumnNamesAndValues!,
       });
+
+      onModalClose();
     } catch (error) {}
   };
 
@@ -43,8 +43,6 @@ const EditModal = () => {
       });
     }
 
-    onModalClose();
-
     try {
       await saveColumn({
         tableName: editDetails?.tableName!,
@@ -52,6 +50,8 @@ const EditModal = () => {
         value: null,
         primaryKeyColumnNamesAndValues: editDetails?.primaryKeyColumnNamesAndValues!,
       });
+
+      onModalClose();
     } catch (error) {}
   };
 

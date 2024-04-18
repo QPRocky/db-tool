@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import useCurrentConnectionStore from '../stores/useCurrentConnectionStore';
 import Connection from '../interfaces/Connection';
@@ -24,6 +24,7 @@ const sendData = async (dto: AddRowRequest, activeConnection?: Connection) => {
 };
 
 export const useAddRow = () => {
+  const queryClient = useQueryClient();
   const activeConnection = useCurrentConnectionStore(s => s.activeConnection);
   const setResultTables = useResultsStore(s => s.setResultTables);
   const resultTables = useResultsStore(s => s.resultTables);

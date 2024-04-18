@@ -173,9 +173,6 @@ public class DatabaseController : ControllerBase
 
     private static async Task EditColumn(string connectionString, SaveColumnDetails dto)
     {
-        //TODO, jos primary key:t‰ on useita, t‰m‰ ei toimi
-        //esim RaportointiProfiili.Lomake_Sektori_Rooli sis‰lt‰‰ 3 PK
-
         using var connection = new SqlConnection(connectionString);
         await connection.OpenAsync();
 
@@ -186,13 +183,25 @@ public class DatabaseController : ControllerBase
             value = ConvertJsonElementToObject((JsonElement)dto.Value);
         }
 
-        var primaryKeyValue = ConvertJsonElementToObject((JsonElement)dto.primaryKeyColumnNamesAndValues[0].Value);
+        var primaryKeyValues = new Dictionary<string, object>();
 
-        var sql = $"UPDATE {dto.TableName} SET {dto.ColumnName} = @Value WHERE {dto.primaryKeyColumnNamesAndValues[0].ColumnName} = @PrimaryKeyValue";
+        foreach (var pk in dto.primaryKeyColumnNamesAndValues)
+        {
+            var pkValue = ConvertJsonElementToObject((JsonElement)pk.Value);
+            primaryKeyValues.Add(pk.ColumnName, pkValue);
+        }
+
+        var whereClause = string.Join(" AND ", primaryKeyValues.Select(kvp => $"{kvp.Key} = @{kvp.Key}"));
+
+        var sql = $"UPDATE {dto.TableName} SET {dto.ColumnName} = @Value WHERE {whereClause}";
 
         var parameters = new DynamicParameters();
         parameters.Add("Value", value);
-        parameters.Add("PrimaryKeyValue", primaryKeyValue);
+
+        foreach (var kvp in primaryKeyValues)
+        {
+            parameters.Add(kvp.Key, kvp.Value);
+        }
 
         var affectedRows = await connection.ExecuteAsync(sql, parameters);
     }
