@@ -1,4 +1,4 @@
-import { Center, Td, Text } from '@chakra-ui/react';
+import { Flex, Td, Text } from '@chakra-ui/react';
 import { VscTrash } from 'react-icons/vsc';
 import useResultsStore from '../../stores/useResultsStore';
 import PrimaryKeyColumnNameAndValue from '../../interfaces/PrimaryKeyColumnNameAndValue';
@@ -24,11 +24,11 @@ const DeleteTd = ({ index, primaryKeyColumnNamesAndValues }: Props) => {
   };
 
   return (
-    <Td position="sticky" left={0} zIndex={1} bg="gray.800">
-      <Center onClick={onDeleteClick} cursor="pointer">
+    <Td position="sticky" left={0} zIndex={1} bg="gray.600">
+      <Flex onClick={onDeleteClick} cursor="pointer" align="center" justify="space-around">
         <Text mr={1}>{index}</Text>
-        <VscTrash color="#aaa" />
-      </Center>
+        <VscTrash color="#fff" />
+      </Flex>
     </Td>
   );
 };
