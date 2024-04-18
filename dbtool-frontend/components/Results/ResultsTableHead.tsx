@@ -11,7 +11,7 @@ const ResultsTableHead = () => {
   return (
     <Thead position="sticky" top={0} zIndex="docked">
       <Tr>
-        <Th />
+        <Th position="sticky" left={0} zIndex={1} />
         {Object.entries(resultTables[selectedTable].columns).map(([columnName, columnDetails], index) => (
           <ResultTh key={index} columnName={columnName} columnDetails={columnDetails} />
         ))}

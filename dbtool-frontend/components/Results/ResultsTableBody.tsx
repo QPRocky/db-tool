@@ -23,7 +23,7 @@ const ResultsTableBody = () => {
 
         return (
           <Tr key={index}>
-            <DeleteTd primaryKeyColumnNamesAndValues={primaryKeyColumnNamesAndValues} />
+            <DeleteTd index={index + 1} primaryKeyColumnNamesAndValues={primaryKeyColumnNamesAndValues} />
             {Object.entries(resultTables[selectedTable].columns).map(([columnName, columnDetails], index) => (
               <ResultTd
                 key={index}

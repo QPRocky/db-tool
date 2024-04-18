@@ -1,14 +1,15 @@
-import { Flex, Td } from '@chakra-ui/react';
+import { Center, Td, Text } from '@chakra-ui/react';
 import { VscTrash } from 'react-icons/vsc';
 import useResultsStore from '../../stores/useResultsStore';
 import PrimaryKeyColumnNameAndValue from '../../interfaces/PrimaryKeyColumnNameAndValue';
 import useDeleteRowModalStore from '../../stores/useDeleteRowModalStore';
 
 interface Props {
+  index: number;
   primaryKeyColumnNamesAndValues: PrimaryKeyColumnNameAndValue[];
 }
 
-const DeleteTd = ({ primaryKeyColumnNamesAndValues }: Props) => {
+const DeleteTd = ({ index, primaryKeyColumnNamesAndValues }: Props) => {
   const selectedTable = useResultsStore(s => s.selectedTable);
   const onModalOpen = useDeleteRowModalStore(s => s.onModalOpen);
   const setDeleteDetails = useDeleteRowModalStore(s => s.setDeleteDetails);
@@ -23,10 +24,11 @@ const DeleteTd = ({ primaryKeyColumnNamesAndValues }: Props) => {
   };
 
   return (
-    <Td>
-      <Flex onClick={onDeleteClick} cursor="pointer">
+    <Td position="sticky" left={0} zIndex={1} bg="gray.800">
+      <Center onClick={onDeleteClick} cursor="pointer">
+        <Text mr={1}>{index}</Text>
         <VscTrash color="#aaa" />
-      </Flex>
+      </Center>
     </Td>
   );
 };
