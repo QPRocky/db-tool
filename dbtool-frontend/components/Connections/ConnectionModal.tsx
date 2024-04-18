@@ -30,7 +30,7 @@ const ConnectionModal = () => {
   const isConnectionModalOpen = useEditConnectionStore(s => s.isConnectionModalOpen);
   const setConnectionModalClose = useEditConnectionStore(s => s.setConnectionModalClose);
   const editConnectionItem = useEditConnectionStore(s => s.editConnectionItem);
-  const { refetch: testConnection, isLoading } = useTestConnection(connectionString);
+  const { refetch: testConnection, isFetching } = useTestConnection(connectionString);
 
   useEffect(() => {
     if (editConnectionItem) {
@@ -114,7 +114,7 @@ const ConnectionModal = () => {
         <ModalFooter>
           <Flex justify="space-between" flex={1}>
             <Button
-              isLoading={isLoading}
+              isLoading={isFetching}
               isDisabled={isButtonsDisabled()}
               variant="outline"
               onClick={testConnectionClick}

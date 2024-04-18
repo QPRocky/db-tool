@@ -10,6 +10,9 @@ public class ColumnDetails
 {
     public string DataType { get; set; }
     public bool IsPK { get; set; }
+    public bool IsIdentity { get; set; }
+    public bool IsGeneratedAlwaysType { get; set; }
+    public bool IsNullable { get; set; }
     public FKDetails FKDetails { get; set; }
 }
 

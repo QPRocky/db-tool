@@ -6,6 +6,9 @@ interface FKDetails {
 interface ColumnDetails {
   dataType: string;
   isPK: boolean;
+  isIdentity: boolean;
+  isGeneratedAlwaysType: boolean;
+  isNullable: boolean;
   fkDetails: FKDetails | null;
 }
 

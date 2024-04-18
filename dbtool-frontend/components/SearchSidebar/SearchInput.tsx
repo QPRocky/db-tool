@@ -8,17 +8,14 @@ import { useSeach } from '../../hooks/useSeach';
 const SearchInput = () => {
   const [searchValue, setSearchValue] = useState('');
   const connectionStatus = useCurrentConnectionStore(s => s.connectionStatus);
-  const [isLoading, setIsLoading] = useState(false);
   const toast = useToast();
   const setResultTables = useResultsStore(s => s.setResultTables);
-  const { refetch: search } = useSeach(searchValue);
+  const { refetch: search, isFetching } = useSeach(searchValue);
   const selectedTable = useResultsStore(s => s.selectedTable);
   const setSelectedTable = useResultsStore(s => s.setSelectedTable);
 
   const doSearch = async () => {
-    if (isLoading) return;
-
-    setIsLoading(true);
+    if (isFetching) return;
 
     const { data, error } = await search();
 
@@ -41,13 +38,11 @@ const SearchInput = () => {
         isClosable: true,
       });
     }
-
-    setIsLoading(false);
   };
 
   return (
     <Input
-      isDisabled={connectionStatus === 'disconnected' || isLoading}
+      isDisabled={connectionStatus === 'disconnected' || isFetching}
       w="full"
       value={searchValue}
       onChange={e => setSearchValue(e.target.value)}

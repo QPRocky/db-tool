@@ -1,6 +1,6 @@
+using Dapper;
 using DbToolApi.Dtos;
 using DbToolApi.Models;
-using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
@@ -43,7 +43,6 @@ public class DatabaseController : ControllerBase
             tables = await GetForeignKeys(connectionString, tables);
             tables = await GetAllData(connectionString, tables);
             tables = DoSearch(searchQuery, tables);
-            //tables = RemoveEmptyTables(tables);
 
             return Ok(tables);
         }
@@ -65,7 +64,6 @@ public class DatabaseController : ControllerBase
             tables = await GetForeignKeys(connectionString, tables);
             tables = FilterTablesByTableNameAndColumnName(tables, dto.TableName, dto.ColumnName);
             tables = await GetAllDataByPrimaryKey(connectionString, tables, dto.ColumnName, dto.PrimaryKey);
-            //tables = RemoveEmptyTables(tables);
 
             return Ok(tables);
         }
@@ -128,7 +126,7 @@ public class DatabaseController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
         }
     }
-    
+
     [HttpDelete("DeleteRow")]
     public async Task<IActionResult> DeleteRow(RemoveRowDetails dto)
     {
@@ -213,7 +211,7 @@ public class DatabaseController : ControllerBase
 
         foreach (var column in dto.Columns)
         {
-            var value = ConvertJsonElementToObject((JsonElement)column.ColumnValue);
+            var value = column.ColumnValue != null ? ConvertJsonElementToObject((JsonElement)column.ColumnValue) : null;
             parameters.Add(column.ColumnName, value);
         }
 
@@ -251,7 +249,7 @@ public class DatabaseController : ControllerBase
     {
         var tables = new Dictionary<string, TableDetails>();
 
-        string query = @"
+        /*string query = @"
                 SELECT 
                     t.TABLE_SCHEMA + '.' + t.TABLE_NAME as FullTableName,
                     c.COLUMN_NAME as ColumnName, 
@@ -265,7 +263,28 @@ public class DatabaseController : ControllerBase
                 ORDER BY 
                     c.TABLE_SCHEMA, 
                     c.TABLE_NAME, 
-                    c.ORDINAL_POSITION";
+                    c.ORDINAL_POSITION";*/
+
+        string query = @"
+                SELECT 
+                    SCHEMA_NAME(t.schema_id) + '.' + t.name AS FullTableName,
+                    c.NAME AS ColumnName,
+                    TYPE_NAME(c.user_type_id) AS DataType,
+                    CASE 
+                        WHEN c.generated_always_type IN (1, 2) THEN 1
+                        ELSE 0
+                    END AS IsGeneratedAlwaysType,
+                    c.is_nullable AS IsNullable
+                FROM 
+                    sys.tables AS t
+                INNER JOIN 
+                    sys.columns AS c ON t.object_id = c.object_id
+                WHERE 
+                    t.type = 'U'  
+                ORDER BY 
+                    SCHEMA_NAME(t.schema_id), 
+                    t.name, 
+                    c.column_id";
 
         using var connection = new SqlConnection(connectionString);
         await connection.OpenAsync();
@@ -286,7 +305,9 @@ public class DatabaseController : ControllerBase
             tables[fullTableName].Columns.Add(row.ColumnName, new ColumnDetails
             {
                 DataType = row.DataType,
-                FKDetails = null
+                FKDetails = null,
+                IsGeneratedAlwaysType = row.IsGeneratedAlwaysType == 1,
+                IsNullable = row.IsNullable
             });
         }
 
@@ -370,7 +391,8 @@ public class DatabaseController : ControllerBase
         string query = @"
             SELECT 
                 t.TABLE_SCHEMA + '.' + t.TABLE_NAME as FullTableName,
-                c.COLUMN_NAME as ColumnName
+                c.COLUMN_NAME as ColumnName,
+                CASE WHEN COLUMNPROPERTY(OBJECT_ID(t.TABLE_SCHEMA + '.' + t.TABLE_NAME), c.COLUMN_NAME, 'IsIdentity') = 1 THEN 1 ELSE 0 END AS IsIdentity
             FROM 
                 INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
             JOIN 
@@ -393,6 +415,7 @@ public class DatabaseController : ControllerBase
             {
                 tables[row.FullTableName].Columns[row.ColumnName].IsPK = true;
             }
+            tables[row.FullTableName].Columns[row.ColumnName].IsIdentity = row.IsIdentity == 1;
         }
 
         return tables;
@@ -543,18 +566,6 @@ public class DatabaseController : ControllerBase
         foreach (var kvp in tempResults)
         {
             tables[kvp.Key].Rows = kvp.Value;
-        }
-
-        return tables;
-    }
-
-    private static Dictionary<string, TableDetails> RemoveEmptyTables(Dictionary<string, TableDetails> tables)
-    {
-        var emptyTableKeys = tables.Where(kvp => kvp.Value.Rows.Count == 0).Select(kvp => kvp.Key).ToList();
-
-        foreach (var key in emptyTableKeys)
-        {
-            tables.Remove(key);
         }
 
         return tables;

@@ -3,7 +3,8 @@ import { create } from 'zustand';
 export interface NewRowColumnDetails {
   columnName: string;
   dataType: string;
-  columnValue: any;
+  columnValue?: any;
+  isNullable: boolean;
 }
 
 interface State {

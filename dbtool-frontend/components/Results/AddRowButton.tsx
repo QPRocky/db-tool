@@ -12,11 +12,14 @@ const AddRowButton = () => {
   const onClick = () => {
     if (!selectedTable || !resultTables) return;
 
-    const columns = Object.entries(resultTables[selectedTable].columns).map(([columnName, columnDetails]) => ({
-      columnName,
-      dataType: columnDetails.dataType,
-      columnValue: '',
-    }));
+    const columns = Object.entries(resultTables[selectedTable].columns)
+      .filter(([_, columnDetails]) => !columnDetails.isGeneratedAlwaysType && !columnDetails.isIdentity)
+      .map(([columnName, columnDetails]) => ({
+        columnName,
+        dataType: columnDetails.dataType,
+        isNullable: columnDetails.isNullable,
+        columnValue: null,
+      }));
 
     initColumns(columns);
     onModalOpen();
