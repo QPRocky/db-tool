@@ -2,9 +2,12 @@ using Dapper;
 using DbToolApi.Dtos;
 using DbToolApi.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
 using System.Text.Json;
+using System.Threading.Channels;
+using System.Xml;
 
 namespace DbToolApi.Controllers;
 
@@ -12,6 +15,9 @@ namespace DbToolApi.Controllers;
 [Route("[controller]")]
 public class DatabaseController : ControllerBase
 {
+    private static Dictionary<string, TrackingTableDetails> trackingStart;
+    private static Dictionary<string, TrackingTableDetails> trackingStop;
+
     [HttpGet("TestConnection")]
     public async Task<IActionResult> TestConnection()
     {
@@ -144,6 +150,122 @@ public class DatabaseController : ControllerBase
         }
     }
 
+    [HttpPut("Tracking")]
+    public async Task<IActionResult> Tracking(string state)
+    {
+        try
+        {
+            var connectionString = GetConnectionStringFromHeader(Request);
+
+            var tables = await GetTables(connectionString);
+            tables = await GetPrimaryKeys(connectionString, tables);
+            tables = await GetAllData(connectionString, tables);
+
+            var changes = new ChangeResults();
+
+            if (state == "start")
+            {
+                trackingStart = CreateTrackingDetails(tables);
+            }
+            else if (state == "stop")
+            {
+                trackingStop = CreateTrackingDetails(tables);
+                changes = CompareTrackingDetails(trackingStart, trackingStop);
+            }
+
+            return Ok(changes);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, e.Message);
+        }
+    }
+
+    private static ChangeResults CompareTrackingDetails(Dictionary<string, TrackingTableDetails> trackingFirst, Dictionary<string, TrackingTableDetails> trackingSecond)
+    {
+        var results = new ChangeResults();
+
+        foreach (var tableName in trackingFirst.Keys.Union(trackingSecond.Keys))
+        {
+            var insertedRows = new ChangeRowDetails { Rows = [] };
+            var updatedRows = new ChangeRowDetails { Rows = [] };
+            var deletedRows = new ChangeRowDetails { Rows = [] };
+
+            var firstRows = trackingFirst.ContainsKey(tableName) ? trackingFirst[tableName].Rows : [];
+            var secondRows = trackingSecond.ContainsKey(tableName) ? trackingSecond[tableName].Rows : [];
+
+            var firstKeys = firstRows.SelectMany(dict => dict.Keys).ToHashSet();
+            var secondKeys = secondRows.SelectMany(dict => dict.Keys).ToHashSet();
+
+            foreach (var key in firstKeys.Except(secondKeys))
+            {
+                var row = firstRows.FirstOrDefault(r => r.ContainsKey(key));
+                if (row != null)
+                    deletedRows.Rows.Add(row);
+            }
+
+            foreach (var key in secondKeys.Except(firstKeys))
+            {
+                var row = secondRows.FirstOrDefault(r => r.ContainsKey(key));
+                if (row != null)
+                    insertedRows.Rows.Add(row);
+            }
+
+            foreach (var key in firstKeys.Intersect(secondKeys))
+            {
+                var firstRow = firstRows.FirstOrDefault(r => r.ContainsKey(key));
+                var secondRow = secondRows.FirstOrDefault(r => r.ContainsKey(key));
+
+                if (firstRow[key] != secondRow[key])
+                {
+                    updatedRows.Rows.Add(new Dictionary<string, string> { { key, firstRow[key] } });
+                    updatedRows.Rows.Add(new Dictionary<string, string> { { key, secondRow[key] } });
+                }
+            }
+
+            if (insertedRows.Rows.Count > 0)
+                results.Inserted.Add(tableName, insertedRows);
+            if (deletedRows.Rows.Count > 0)
+                results.Deleted.Add(tableName, deletedRows);
+            if (updatedRows.Rows.Count > 0)
+                results.Updated.Add(tableName, updatedRows);
+        }
+
+        return results;
+    }
+
+    private static Dictionary<string, TrackingTableDetails> CreateTrackingDetails(Dictionary<string, TableDetails> tables)
+    {
+        var result = new Dictionary<string, TrackingTableDetails>();
+
+        foreach (var tableEntry in tables)
+        {
+            var tableName = tableEntry.Key;
+            var tableDetails = tableEntry.Value;
+
+            var pkColumns = tableDetails.Columns
+                .Where(c => c.Value.IsPK)
+                .Select(c => c.Key)
+                .ToList();
+
+            if (pkColumns.Count == 0)
+                continue;
+
+            var trackingDetails = new TrackingTableDetails();
+
+            foreach (var row in tableDetails.Rows)
+            {
+                var pkValue = string.Join("", pkColumns.Select(pk => row[pk]?.ToString() ?? ""));
+                var serializedRow = JsonConvert.SerializeObject(row, Newtonsoft.Json.Formatting.None);
+                trackingDetails.Rows.Add(new Dictionary<string, string> { { pkValue, serializedRow } });
+            }
+
+            result.Add(tableName, trackingDetails);
+        }
+
+        return result;
+    }
+
     private static async Task DeleteRow(string connectionString, RemoveRowDetails dto)
     {
         using var connection = new SqlConnection(connectionString);
@@ -257,22 +379,6 @@ public class DatabaseController : ControllerBase
     private static async Task<Dictionary<string, TableDetails>> GetTables(string connectionString)
     {
         var tables = new Dictionary<string, TableDetails>();
-
-        /*string query = @"
-                SELECT 
-                    t.TABLE_SCHEMA + '.' + t.TABLE_NAME as FullTableName,
-                    c.COLUMN_NAME as ColumnName, 
-                    c.DATA_TYPE as DataType 
-                FROM 
-                    INFORMATION_SCHEMA.COLUMNS c
-                INNER JOIN 
-                    INFORMATION_SCHEMA.TABLES t ON c.TABLE_NAME = t.TABLE_NAME AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                WHERE 
-                    t.TABLE_TYPE = 'BASE TABLE'
-                ORDER BY 
-                    c.TABLE_SCHEMA, 
-                    c.TABLE_NAME, 
-                    c.ORDINAL_POSITION";*/
 
         string query = @"
                 SELECT 

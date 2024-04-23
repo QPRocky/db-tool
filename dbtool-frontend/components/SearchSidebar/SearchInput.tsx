@@ -19,6 +19,8 @@ const SearchInput = () => {
 
     const { data, error } = await search();
 
+    console.log(data);
+
     if (data) {
       const resetSelectedTable = !selectedTable || !data || !data[selectedTable];
 

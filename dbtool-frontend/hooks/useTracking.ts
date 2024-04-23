@@ -7,15 +7,16 @@ import getAxiosError from '../utils/getAxiosError';
 import { useToast } from '@chakra-ui/react';
 import useResultsStore from '../stores/useResultsStore';
 import { TrackingState } from '../stores/useTrackingStore';
+import { ChangeResults } from '../interfaces/ChangeResults';
 
 const sendData = async (state: TrackingState, activeConnection?: Connection) => {
-  const result = await axios.put(`${baseUrl}tracking?state=${state}`, null, {
+  const { data } = await axios.put<ChangeResults>(`${baseUrl}tracking?state=${state}`, null, {
     headers: {
       ConnectionString: activeConnection?.connectionString,
     },
   });
 
-  return result;
+  return data;
 };
 
 export const useTracking = () => {
@@ -27,7 +28,11 @@ export const useTracking = () => {
 
   return useMutation({
     mutationFn: (state: TrackingState) => sendData(state, activeConnection),
-    onSuccess: (data, dto) => {},
+    onSuccess: (data, variables) => {
+      if ((variables as TrackingState) === 'stop') {
+        console.log(data);
+      }
+    },
     onError: error => {
       const errorMessage = getAxiosError(error);
 
