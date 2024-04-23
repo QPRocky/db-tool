@@ -9,7 +9,7 @@ const Navigation = () => {
     <Box width={NAV_ITEM_SIZE} height="100vh" bg="gray.700">
       <VStack spacing={0}>
         <NavigationItem label="Search" href="Search" icon={VscSearch} />
-        <NavigationItem label="Track" href="Track" icon={VscGitCompare} />
+        <NavigationItem label="Tracking" href="Tracking" icon={VscGitCompare} />
         <NavigationItem label="Notes" href="Notes" icon={VscNote} />
         <NavigationItem label="Settings" href="Settings" icon={VscSettingsGear} />
       </VStack>

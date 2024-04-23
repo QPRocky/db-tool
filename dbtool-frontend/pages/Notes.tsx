@@ -4,7 +4,7 @@ import { NextPage } from 'next';
 import MainContainer from '../components/MainContainer';
 import useNotesStore from '../stores/useNotesStore';
 
-const TrackPage: NextPage = () => {
+const NotesPage: NextPage = () => {
   const text = useNotesStore(s => s.text);
 
   return (
@@ -26,4 +26,4 @@ const TrackPage: NextPage = () => {
   );
 };
 
-export default TrackPage;
+export default NotesPage;
