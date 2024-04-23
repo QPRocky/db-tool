@@ -5,8 +5,7 @@ import Connection from '../interfaces/Connection';
 import baseUrl from '../utils/baseUrl';
 import getAxiosError from '../utils/getAxiosError';
 import { useToast } from '@chakra-ui/react';
-import useResultsStore from '../stores/useResultsStore';
-import { TrackingState } from '../stores/useTrackingStore';
+import useTrackingStore, { TrackingState } from '../stores/useTrackingStore';
 import { ChangeResults } from '../interfaces/ChangeResults';
 
 const sendData = async (state: TrackingState, activeConnection?: Connection) => {
@@ -20,10 +19,8 @@ const sendData = async (state: TrackingState, activeConnection?: Connection) => 
 };
 
 export const useTracking = () => {
-  const queryClient = useQueryClient();
   const activeConnection = useCurrentConnectionStore(s => s.activeConnection);
-  const setResultTables = useResultsStore(s => s.setResultTables);
-  const resultTables = useResultsStore(s => s.resultTables);
+  const setChangeResults = useTrackingStore(s => s.setChangeResults);
   const toast = useToast();
 
   return useMutation({
@@ -31,6 +28,7 @@ export const useTracking = () => {
     onSuccess: (data, variables) => {
       if ((variables as TrackingState) === 'stop') {
         console.log(data);
+        setChangeResults(data);
       }
     },
     onError: error => {

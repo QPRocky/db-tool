@@ -2,7 +2,7 @@
 
 public class ChangeRowDetails
 {
-    public List<Dictionary<string, string>> Rows { get; set; } = [];
+    public List<string> Rows { get; set; } = [];
 }
 
 public class ChangeResults

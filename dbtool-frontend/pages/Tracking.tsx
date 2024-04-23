@@ -9,6 +9,7 @@ import SearchInput from '../components/SearchSidebar/SearchInput';
 import TablesList from '../components/SearchSidebar/TablesList';
 import Splitter from '../components/Splitter';
 import TrackingButtonsContainer from '../components/Tracking/TrackingButtonsContainer';
+import TrackingTablesList from '../components/Tracking/TrackingTablesList';
 
 const TrackingPage: NextPage = () => {
   return (
@@ -16,10 +17,11 @@ const TrackingPage: NextPage = () => {
       <Resplit.Root style={{ flex: 1 }}>
         <Resplit.Pane order={0} initialSize="0.2fr" minSize="0.2fr">
           <Flex direction="column" h="100vh" py={2}>
+            <ConnectionIndicator />
             <Box px={2}>
               <TrackingButtonsContainer />
             </Box>
-            <p>TablesList</p>
+            <TrackingTablesList />
           </Flex>
         </Resplit.Pane>
         <Splitter />

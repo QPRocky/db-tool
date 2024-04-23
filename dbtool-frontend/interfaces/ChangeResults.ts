@@ -1,5 +1,5 @@
 interface ChangeRowDetails {
-  rows: Record<string, string>[];
+  rows: string[];
 }
 
 interface ChangeResults {

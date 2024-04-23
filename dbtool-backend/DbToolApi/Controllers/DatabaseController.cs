@@ -201,14 +201,14 @@ public class DatabaseController : ControllerBase
             {
                 var row = firstRows.FirstOrDefault(r => r.ContainsKey(key));
                 if (row != null)
-                    deletedRows.Rows.Add(row);
+                    deletedRows.Rows.Add(row[key]);
             }
 
             foreach (var key in secondKeys.Except(firstKeys))
             {
                 var row = secondRows.FirstOrDefault(r => r.ContainsKey(key));
                 if (row != null)
-                    insertedRows.Rows.Add(row);
+                    insertedRows.Rows.Add(row[key]);
             }
 
             foreach (var key in firstKeys.Intersect(secondKeys))
@@ -218,8 +218,8 @@ public class DatabaseController : ControllerBase
 
                 if (firstRow[key] != secondRow[key])
                 {
-                    updatedRows.Rows.Add(new Dictionary<string, string> { { key, firstRow[key] } });
-                    updatedRows.Rows.Add(new Dictionary<string, string> { { key, secondRow[key] } });
+                    updatedRows.Rows.Add(firstRow[key]);
+                    updatedRows.Rows.Add(secondRow[key]);
                 }
             }
 
