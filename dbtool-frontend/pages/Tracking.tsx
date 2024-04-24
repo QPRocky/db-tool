@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Flex, Input, Button, Box } from '@chakra-ui/react';
+import React from 'react';
+import { Flex, Box } from '@chakra-ui/react';
 import { NextPage } from 'next';
 import MainContainer from '../components/MainContainer';
 import { Resplit } from 'react-resplit';
-import ResultsContainer from '../components/Results/ResultsContainer';
 import ConnectionIndicator from '../components/SearchSidebar/ConnectionIndicator';
-import SearchInput from '../components/SearchSidebar/SearchInput';
-import TablesList from '../components/SearchSidebar/TablesList';
 import Splitter from '../components/Splitter';
 import TrackingButtonsContainer from '../components/Tracking/TrackingButtonsContainer';
 import TrackingTablesList from '../components/Tracking/TrackingTablesList';

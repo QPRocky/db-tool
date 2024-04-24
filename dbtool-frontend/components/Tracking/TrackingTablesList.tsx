@@ -16,6 +16,11 @@ const TrackingTablesList = () => {
       <Text py={5} fontSize="sm" px={2} as="b">
         Tables
       </Text>
+      {tableNames.length === 0 && (
+        <Text fontSize="sm" px={2} as="b" color="yellow.500">
+          No changes
+        </Text>
+      )}
       {tableNames.map(tableName => (
         <Flex
           key={tableName}

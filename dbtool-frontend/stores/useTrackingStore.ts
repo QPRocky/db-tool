@@ -14,7 +14,7 @@ interface State {
 
 const useTrackingStore = create<State>()(set => ({
   state: 'start',
-  changeResults: {
+  /*changeResults: {
     inserted: {
       'Kohde.Kohde1': { rows: ['row1', 'row2'] },
       'Kohde.Kohde2': { rows: ['row3'] },
@@ -27,7 +27,8 @@ const useTrackingStore = create<State>()(set => ({
       'Kohde.Kohde1': { rows: ['row7'] },
       'Kohde.Kohde3': { rows: ['row8', 'row9'] },
     },
-  },
+  },*/
+  changeResults: undefined,
   selectedTrackingTable: undefined,
 
   toggleState: () =>
