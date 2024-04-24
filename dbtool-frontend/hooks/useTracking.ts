@@ -27,7 +27,6 @@ export const useTracking = () => {
     mutationFn: (state: TrackingState) => sendData(state, activeConnection),
     onSuccess: (data, variables) => {
       if ((variables as TrackingState) === 'stop') {
-        console.log(data);
         setChangeResults(data);
       }
     },

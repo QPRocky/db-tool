@@ -9,8 +9,6 @@ const getKeysFromChangeResults = (changeResults: ChangeResults): string[] => {
 
   const uniqueSortedKeys = Array.from(new Set(allKeys)).sort();
 
-  console.log({ allKeys, uniqueSortedKeys });
-
   return uniqueSortedKeys;
 };
 

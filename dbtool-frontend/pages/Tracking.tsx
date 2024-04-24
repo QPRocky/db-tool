@@ -7,6 +7,7 @@ import ConnectionIndicator from '../components/SearchSidebar/ConnectionIndicator
 import Splitter from '../components/Splitter';
 import TrackingButtonsContainer from '../components/Tracking/TrackingButtonsContainer';
 import TrackingTablesList from '../components/Tracking/TrackingTablesList';
+import TrackingResultsContainer from '../components/Tracking/TrackingResultsContainer';
 
 const TrackingPage: NextPage = () => {
   return (
@@ -24,7 +25,7 @@ const TrackingPage: NextPage = () => {
         <Splitter />
         <Resplit.Pane order={2} initialSize="0.8fr">
           <Flex h="100vh">
-            <p>ResultsContainer</p>
+            <TrackingResultsContainer />
           </Flex>
         </Resplit.Pane>
       </Resplit.Root>
