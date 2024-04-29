@@ -50,7 +50,7 @@ const AddRowModal = () => {
           <Button mr={3} onClick={onModalClose}>
             Cancel
           </Button>
-          <Button mr={3} onClick={addClick} bg="red.700">
+          <Button mr={3} onClick={addClick} bg="green.700">
             Save
           </Button>
         </ModalFooter>

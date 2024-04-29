@@ -31,7 +31,7 @@ const DeleteModal = () => {
   return (
     <Modal isOpen={isModalOpen} onClose={onModalClose}>
       <ModalOverlay />
-      <ModalContent bg="#1a1f2c">
+      <ModalContent>
         <ModalHeader>Delete row?</ModalHeader>
         <ModalCloseButton />
         <ModalBody></ModalBody>

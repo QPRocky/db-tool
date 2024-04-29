@@ -113,16 +113,10 @@ const ConnectionModal = () => {
 
         <ModalFooter>
           <Flex justify="space-between" flex={1}>
-            <Button
-              isLoading={isFetching}
-              isDisabled={isButtonsDisabled()}
-              variant="outline"
-              onClick={testConnectionClick}
-              bg="blue.700"
-            >
+            <Button isLoading={isFetching} isDisabled={isButtonsDisabled()} onClick={testConnectionClick} bg="blue.700">
               Test connection
             </Button>
-            <Button isDisabled={isButtonsDisabled()} variant="outline" onClick={saveConnectionClick} bg="green.700">
+            <Button isDisabled={isButtonsDisabled()} onClick={saveConnectionClick} bg="green.700">
               Save
             </Button>
           </Flex>

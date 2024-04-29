@@ -25,7 +25,7 @@ const DeleteConnectionModal = () => {
   return (
     <Modal isOpen={isDeleteConnectionModalOpen} onClose={setDeleteConnectionModalClose}>
       <ModalOverlay />
-      <ModalContent bg="#1a1f2c">
+      <ModalContent>
         <ModalHeader>Delete connection?</ModalHeader>
         <ModalCloseButton />
         <ModalBody></ModalBody>

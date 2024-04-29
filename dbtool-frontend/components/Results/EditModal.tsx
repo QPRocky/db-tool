@@ -85,7 +85,7 @@ const EditModal = () => {
   return (
     <Modal isOpen={isModalOpen} onClose={onModalClose}>
       <ModalOverlay />
-      <ModalContent bg="#1a1f2c">
+      <ModalContent>
         <ModalHeader>Edit</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
