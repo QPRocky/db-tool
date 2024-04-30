@@ -529,8 +529,8 @@ public class DatabaseController : ControllerBase
             if (tables.ContainsKey(row.FullTableName))
             {
                 tables[row.FullTableName].Columns[row.ColumnName].IsPK = true;
-            }
-            tables[row.FullTableName].Columns[row.ColumnName].IsIdentity = row.IsIdentity == 1;
+                tables[row.FullTableName].Columns[row.ColumnName].IsIdentity = row.IsIdentity == 1;
+            }            
         }
 
         return tables;
