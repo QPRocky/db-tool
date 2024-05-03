@@ -5,7 +5,7 @@ interface Props {
 
 const DatatypeText = ({ dataType }: Props) => {
   return (
-    <Text size="xs" color="yellow.500">
+    <Text fontSize="xs" color="yellow.500">
       {dataType}
     </Text>
   );

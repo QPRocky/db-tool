@@ -5,7 +5,7 @@ interface Props {
 }
 
 const ColumnNameText = ({ columnName }: Props) => {
-  return <Text size="xs">{columnName}</Text>;
+  return <Text fontSize="xs">{columnName}</Text>;
 };
 
 export default ColumnNameText;

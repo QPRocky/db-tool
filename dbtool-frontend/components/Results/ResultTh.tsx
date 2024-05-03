@@ -1,9 +1,10 @@
-import { Th, Flex, Text } from '@chakra-ui/react';
+import { Th, Flex } from '@chakra-ui/react';
 import { ColumnDetails } from '../../interfaces/Tables';
 import FKTextWithTooltip from './FKTextWithTooltip';
 import PKText from './PKText';
 import DatatypeText from './DatatypeText';
 import ColumnNameText from './ColumnNameText';
+import RequiredText from './RequiredText';
 
 interface Props {
   columnName: string;
@@ -14,7 +15,10 @@ const ResultTh = ({ columnName, columnDetails }: Props) => {
   return (
     <Th>
       <Flex direction="column">
-        <ColumnNameText columnName={columnName} />
+        <Flex>
+          <ColumnNameText columnName={columnName} />
+          <RequiredText columnDetails={columnDetails} />
+        </Flex>
         <Flex>
           <DatatypeText dataType={columnDetails.dataType} />
           {columnDetails.isPK && <PKText />}

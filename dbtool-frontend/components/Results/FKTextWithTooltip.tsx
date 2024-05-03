@@ -7,7 +7,7 @@ interface Props {
 const FKTextWithTooltip = ({ label }: Props) => {
   return (
     <Tooltip bg="gray.600" color="green.400" fontSize="xs" fontWeight={900} label={label} aria-label="A tooltip">
-      <Text size="xs" color="green.500" ml={1}>
+      <Text fontSize="xs" color="green.500" ml={1}>
         FK
       </Text>
     </Tooltip>
