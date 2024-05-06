@@ -6,8 +6,6 @@ using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Data.SqlClient;
 using System.Text.Json;
-using System.Threading.Channels;
-using System.Xml;
 
 namespace DbToolApi.Controllers;
 
@@ -530,7 +528,7 @@ public class DatabaseController : ControllerBase
             {
                 tables[row.FullTableName].Columns[row.ColumnName].IsPK = true;
                 tables[row.FullTableName].Columns[row.ColumnName].IsIdentity = row.IsIdentity == 1;
-            }            
+            }
         }
 
         return tables;
@@ -686,10 +684,9 @@ public class DatabaseController : ControllerBase
         return tables;
     }
 
-    private static async Task<Dictionary<string, TableDetails>> GetAllDataByKey(string connectionString, Dictionary<string, TableDetails> tables, string column, int key)
+    private static async Task<Dictionary<string, TableDetails>> GetAllDataByKey(string connectionString, Dictionary<string, TableDetails> tables, string column, object key)
     {
         var tasks = new List<Task>();
-
         var tempResults = new ConcurrentDictionary<string, List<Dictionary<string, object>>>();
 
         foreach (var table in tables.Keys.ToList())
@@ -703,7 +700,12 @@ public class DatabaseController : ControllerBase
             {
                 using var connection = new SqlConnection(connectionString);
                 await connection.OpenAsync();
-                string query = $"SELECT * FROM {table} WHERE {column}={key}";
+
+                string query = key is int
+                     ? $"SELECT * FROM {table} WHERE {column} = {key}"
+                     : $"SELECT * FROM {table} WHERE {column} = '{key}'";
+
+
                 var rows = await connection.QueryAsync(query);
                 var rowList = new List<Dictionary<string, object>>();
 

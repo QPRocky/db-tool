@@ -9,7 +9,7 @@ import { Tables } from '../interfaces/Tables';
 export interface ForeignKeySearchDetails {
   referenceTableName: string;
   referenceColumnName: string;
-  foreignKey: number;
+  foreignKey: any;
 }
 
 const sendData = async (dto: ForeignKeySearchDetails, activeConnection?: Connection) => {
@@ -23,16 +23,15 @@ const sendData = async (dto: ForeignKeySearchDetails, activeConnection?: Connect
 
 export const useSearchByForeignKey = () => {
   const activeConnection = useCurrentConnectionStore(s => s.activeConnection);
-  const selectedTable = useResultsStore(s => s.selectedTable);
   const setSelectedTable = useResultsStore(s => s.setSelectedTable);
   const setResultTables = useResultsStore(s => s.setResultTables);
 
   return useMutation({
     mutationFn: (dto: ForeignKeySearchDetails) => sendData(dto, activeConnection),
     onSuccess: data => {
-      const resetSelectedTable = !selectedTable || !data || !data[selectedTable];
-
-      if (resetSelectedTable) {
+      if (Object.keys(data).length > 0) {
+        setSelectedTable(Object.keys(data)[0]);
+      } else {
         setSelectedTable(undefined);
       }
 
