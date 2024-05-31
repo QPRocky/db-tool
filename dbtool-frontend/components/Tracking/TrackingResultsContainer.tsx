@@ -1,6 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 import TrackingResultsTable from './TrackingResultsTable';
 import useTrackingStore from '../../stores/useTrackingStore';
+import JsonModal from '../Results/JsonModal';
 
 const TrackingResultsContainer = () => {
   const changeResults = useTrackingStore(s => s.changeResults);
@@ -31,6 +32,7 @@ const TrackingResultsContainer = () => {
           rows={changeResults.inserted[selectedTrackingTable].rows}
         />
       )}
+      <JsonModal />
     </Flex>
   );
 };

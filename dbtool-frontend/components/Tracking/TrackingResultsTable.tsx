@@ -1,4 +1,5 @@
-import { Flex, Table, Text, TableContainer, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
+import { Flex, Table, Text, TableContainer, Tbody, Th, Thead, Tr } from '@chakra-ui/react';
+import TrackingResultTd from './TrackingResultTd';
 
 interface Props {
   title: string;
@@ -31,14 +32,7 @@ const TrackingResultsTable = ({ title, titleColor, rows }: Props) => {
             {data.map((item, index) => (
               <Tr key={index}>
                 {allKeys.map(key => (
-                  <Td
-                    key={`${index}-${key}`}
-                    color={item[key] === null ? 'gray.500' : '#fff'}
-                    maxW={'300px'}
-                    overflow="hidden"
-                  >
-                    {item[key] === null ? 'null' : item[key]}
-                  </Td>
+                  <TrackingResultTd key={`${index}-${key}`} value={item[key]} />
                 ))}
               </Tr>
             ))}
