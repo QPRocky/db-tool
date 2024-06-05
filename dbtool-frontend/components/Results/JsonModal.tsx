@@ -1,4 +1,13 @@
-import { Modal, ModalBody, ModalCloseButton, ModalContent, ModalHeader, ModalOverlay } from '@chakra-ui/react';
+import {
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  Button,
+  useToast,
+} from '@chakra-ui/react';
 import JsonFormatter from './JsonFormatter';
 import useJsonModalStore from '../../stores/useJsonModalStore';
 
@@ -6,6 +15,7 @@ const JsonModal = () => {
   const jsonString = useJsonModalStore(s => s.jsonString);
   const isModalOpen = useJsonModalStore(s => s.isModalOpen);
   const onModalClose = useJsonModalStore(s => s.onModalClose);
+  const toast = useToast();
 
   if (jsonString === '') return null;
 
@@ -15,7 +25,22 @@ const JsonModal = () => {
     <Modal isOpen={isModalOpen} onClose={onModalClose} size={'full'}>
       <ModalOverlay />
       <ModalContent bg="#1a1f2c">
-        <ModalHeader></ModalHeader>
+        <ModalHeader>
+          <Button
+            bg="blue.700"
+            onClick={() => {
+              navigator.clipboard.writeText(json);
+              toast({
+                title: 'Copied to clipboard',
+                status: 'success',
+                duration: 2000,
+                isClosable: true,
+              });
+            }}
+          >
+            Copy to clipboard
+          </Button>
+        </ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <JsonFormatter
