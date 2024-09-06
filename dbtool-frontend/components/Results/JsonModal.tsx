@@ -24,7 +24,7 @@ const JsonModal = () => {
   return (
     <Modal isOpen={isModalOpen} onClose={onModalClose} size={'full'}>
       <ModalOverlay />
-      <ModalContent bg="#1a1f2c">
+      <ModalContent bg="#1a1f2c" height="100vh">
         <ModalHeader>
           <Button
             bg="blue.700"
@@ -42,7 +42,7 @@ const JsonModal = () => {
           </Button>
         </ModalHeader>
         <ModalCloseButton />
-        <ModalBody>
+        <ModalBody overflowY="auto">
           <JsonFormatter
             json={JSON.stringify(JSON.parse(json), null, 2)}
             tabWith={2}
