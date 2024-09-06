@@ -15,6 +15,7 @@ const TrackingResultsTableHead = ({ rows }: Props) => {
   return (
     <Thead>
       <Tr>
+        <Th position="sticky" left={0} zIndex={1} />
         {allKeys.map(key => {
           const color = everyDataIsSame(key) ? 'white' : 'blue.400';
           return (
