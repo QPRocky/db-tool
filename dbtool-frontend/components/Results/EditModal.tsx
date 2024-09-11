@@ -11,9 +11,11 @@ import {
   Checkbox,
   Flex,
   Text,
+  Textarea,
 } from '@chakra-ui/react';
 import useEditColumnModalStore from '../../stores/useEditColumnModalStore';
 import { useSaveColumn } from '../../hooks/useSaveColumn';
+import isJson from '../../utils/isJson';
 
 const EditModal = () => {
   const editDetails = useEditColumnModalStore(s => s.editDetails);
@@ -21,6 +23,8 @@ const EditModal = () => {
   const { mutateAsync: saveColumn } = useSaveColumn();
   const isModalOpen = useEditColumnModalStore(s => s.isModalOpen);
   const onModalClose = useEditColumnModalStore(s => s.onModalClose);
+
+  const isJsonString = isJson(editDetails?.value);
 
   const saveClick = async () => {
     try {
@@ -73,24 +77,35 @@ const EditModal = () => {
     }
   };
 
+  const onTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (editDetails) {
+      setEditDetails({
+        ...editDetails,
+        value: e.target.value,
+      });
+    }
+  };
+
   const renderInputByDataType = (dataType?: string) => {
     switch (dataType) {
       case 'bit':
         return <Checkbox isChecked={editDetails?.value} onChange={onCheckboxChange} />;
+      case 'json':
+        return <Textarea value={editDetails?.value} onChange={onTextareaChange} rows={10} />;
       default:
         return <Input value={editDetails?.value} onChange={onInputChange} />;
     }
   };
 
   return (
-    <Modal isOpen={isModalOpen} onClose={onModalClose}>
+    <Modal isOpen={isModalOpen} onClose={onModalClose} size={isJsonString ? 'xl' : 'md'}>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>Edit</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Text mb={2}>{editDetails?.columnName}</Text>
-          {renderInputByDataType(editDetails?.columnDetails.dataType)}
+          {renderInputByDataType(isJsonString ? 'json' : editDetails?.columnDetails.dataType)}
         </ModalBody>
         <ModalFooter>
           <Flex justify="space-between" flex={1}>
