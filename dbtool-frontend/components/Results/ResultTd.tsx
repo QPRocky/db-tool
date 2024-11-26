@@ -77,7 +77,7 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
           onMouseEnter={() => onMouseEnter(columnDetails)}
           onMouseLeave={() => setTooltipRows(undefined)}
         >
-          {columnDetails.fkDetails && tooltipRows ? (
+          {columnDetails.fkDetails ? (
             <Tooltip
               bg="gray.600"
               color="white"
@@ -87,7 +87,7 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
                 <TableContainer>
                   <Table variant="simple">
                     <Tbody>
-                      {tooltipRows.map((row, rowIndex) =>
+                      {tooltipRows?.map((row, rowIndex) =>
                         Object.entries(row).map(([key, value], index) => (
                           <Tr key={`${rowIndex}-${index}`}>
                             <Td>{key}</Td>
