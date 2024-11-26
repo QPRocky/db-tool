@@ -91,7 +91,7 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
                         Object.entries(row).map(([key, value], index) => (
                           <Tr key={`${rowIndex}-${index}`}>
                             <Td>{key}</Td>
-                            <Td>{value}</Td>
+                            <Td>{String(value).length > 150 ? `${String(value).slice(0, 150)}...` : String(value)}</Td>
                           </Tr>
                         )),
                       )}
