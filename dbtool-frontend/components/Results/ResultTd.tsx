@@ -91,7 +91,6 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
                         Object.entries(row).map(([key, value], index) => (
                           <Tr key={`${rowIndex}-${index}`}>
                             <Td>{key}</Td>
-                            {/* <Td>{String(value).length > 150 ? `${String(value).slice(0, 150)}...` : String(value)}</Td> */}
                             <Td maxWidth="700px" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
                               {value}
                             </Td>
