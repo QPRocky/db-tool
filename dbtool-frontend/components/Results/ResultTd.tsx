@@ -85,7 +85,7 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
               sx={{ maxWidth: 'none' }}
               label={
                 <TableContainer>
-                  <Table variant="simple">
+                  <Table>
                     <Tbody>
                       {tooltipRows?.map((row, rowIndex) =>
                         Object.entries(row).map(([key, value], index) => (
