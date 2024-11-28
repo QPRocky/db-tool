@@ -1,9 +1,10 @@
-import { Input, useToast } from '@chakra-ui/react';
+import { Input, useToast, InputGroup, IconButton, InputRightElement } from '@chakra-ui/react';
 import { useState } from 'react';
 import useCurrentConnectionStore from '../../stores/useCurrentConnectionStore';
 import getAxiosError from '../../utils/getAxiosError';
 import useResultsStore from '../../stores/useResultsStore';
 import { useSeach } from '../../hooks/useSeach';
+import { SearchIcon } from '@chakra-ui/icons';
 
 const SearchInput = () => {
   const [searchValue, setSearchValue] = useState('');
@@ -41,17 +42,22 @@ const SearchInput = () => {
   };
 
   return (
-    <Input
-      isDisabled={connectionStatus === 'disconnected' || isFetching}
-      w="full"
-      value={searchValue}
-      onChange={e => setSearchValue(e.target.value)}
-      onKeyDown={e => {
-        if (e.key === 'Enter') {
-          doSearch();
-        }
-      }}
-    />
+    <InputGroup>
+      <Input
+        isDisabled={connectionStatus === 'disconnected' || isFetching}
+        w="full"
+        value={searchValue}
+        onChange={e => setSearchValue(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') {
+            doSearch();
+          }
+        }}
+      />
+      <InputRightElement>
+        <IconButton aria-label="Hae" icon={<SearchIcon />} size="sm" onClick={doSearch} variant="ghost" />
+      </InputRightElement>
+    </InputGroup>
   );
 };
 
