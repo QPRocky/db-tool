@@ -12,6 +12,14 @@ const formatValue = (columnDetails: ColumnDetails, value: any) => {
     value = value ? '[x]' : '[ ]';
   }
 
+  if (typeof value === 'boolean') {
+    if (value === true) {
+      value = '[x]';
+    } else {
+      value = '[ ]';
+    }
+  }
+
   if (value && value.length > 150) {
     value = value.substring(0, 150);
   }

@@ -92,7 +92,7 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
                           <Tr key={`${rowIndex}-${index}`}>
                             <Td>{key}</Td>
                             <Td maxWidth="700px" whiteSpace="nowrap" overflow="hidden" textOverflow="ellipsis">
-                              {value}
+                              {formatValue(columnDetails, value)}
                             </Td>
                           </Tr>
                         )),
