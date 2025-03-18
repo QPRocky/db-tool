@@ -15,18 +15,22 @@ const Paginate = () => {
 
   const sort = (tableDetails: TableDetails, sortingColumnName: string, isSortingAsc: boolean) => {
     const sortingColumnDetails = tableDetails.columns[sortingColumnName];
-    const isStringType = sortingColumnDetails.dataType === 'nvarchar' || sortingColumnDetails.dataType === 'varchar';
+    const isStringType =
+      sortingColumnDetails.dataType === 'nvarchar' ||
+      sortingColumnDetails.dataType === 'varchar' ||
+      sortingColumnDetails.dataType === 'datetime' ||
+      sortingColumnDetails.dataType === 'datetime2';
 
     return [...tableDetails.rows].sort((a, b) => {
-      const aValue = a[sortingColumnName];
-      const bValue = b[sortingColumnName];
+      const aValue = a[sortingColumnName] ?? '';
+      const bValue = b[sortingColumnName] ?? '';
 
       let comparison: number;
 
       if (isStringType) {
-        comparison = aValue.localeCompare(bValue);
+        comparison = String(aValue).localeCompare(String(bValue));
       } else {
-        comparison = aValue - bValue;
+        comparison = (aValue ?? 0) - (bValue ?? 0);
       }
 
       return isSortingAsc ? comparison : -comparison;
