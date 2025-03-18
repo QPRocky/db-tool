@@ -2,21 +2,46 @@ import { useEffect } from 'react';
 import { Button, Box, HStack } from '@chakra-ui/react';
 import useResultsStore from '../../stores/useResultsStore';
 import { ROWS_PER_PAGE } from '../../stores/useResultsStore';
+import { TableDetails } from '../../interfaces/Tables';
 
 const Paginate = () => {
   const selectedTable = useResultsStore(s => s.selectedTable);
   const resultTables = useResultsStore(s => s.resultTables);
   const currentPage = useResultsStore(s => s.currentPage);
+  const sortingColumnName = useResultsStore(s => s.sortingColumnName);
+  const isSortingAsc = useResultsStore(s => s.isSortingAsc);
   const setCurrentPage = useResultsStore(s => s.setCurrentPage);
   const setCurrentRows = useResultsStore(s => s.setCurrentRows);
 
+  const sort = (tableDetails: TableDetails, sortingColumnName: string, isSortingAsc: boolean) => {
+    const sortingColumnDetails = tableDetails.columns[sortingColumnName];
+    const isStringType = sortingColumnDetails.dataType === 'nvarchar' || sortingColumnDetails.dataType === 'varchar';
+
+    return [...tableDetails.rows].sort((a, b) => {
+      const aValue = a[sortingColumnName];
+      const bValue = b[sortingColumnName];
+
+      let comparison: number;
+
+      if (isStringType) {
+        comparison = aValue.localeCompare(bValue);
+      } else {
+        comparison = aValue - bValue;
+      }
+
+      return isSortingAsc ? comparison : -comparison;
+    });
+  };
+
   useEffect(() => {
-    if (selectedTable && resultTables) {
+    if (selectedTable && resultTables && sortingColumnName) {
       const startIndex = (currentPage - 1) * ROWS_PER_PAGE;
       const endIndex = startIndex + ROWS_PER_PAGE;
-      setCurrentRows(resultTables[selectedTable].rows.slice(startIndex, endIndex));
+      const sortedRows = sort(resultTables[selectedTable], sortingColumnName, isSortingAsc);
+
+      setCurrentRows(sortedRows.slice(startIndex, endIndex));
     }
-  }, [selectedTable, resultTables, currentPage, ROWS_PER_PAGE]);
+  }, [selectedTable, resultTables, currentPage, sortingColumnName, isSortingAsc, ROWS_PER_PAGE]);
 
   if (!selectedTable || !resultTables) return null;
 

@@ -8,10 +8,13 @@ interface State {
   resultTables?: Tables;
   currentPage: number;
   currentRows: Record<string, any>[];
+  sortingColumnName?: string;
+  isSortingAsc: boolean;
   setSelectedTable: (selectedTable?: string) => void;
   setResultTables: (resultTables: Tables) => void;
   setCurrentPage: (currentPage: number) => void;
   setCurrentRows: (currentRows: Record<string, any>[]) => void;
+  setSortingColumnName: (sortingColumnName?: string) => void;
 }
 
 const useResultsStore = create<State>()(set => ({
@@ -19,11 +22,20 @@ const useResultsStore = create<State>()(set => ({
   resultTables: undefined,
   currentPage: 1,
   currentRows: [],
+  sortingColumnName: undefined,
+  isSortingAsc: true,
 
   setSelectedTable: (selectedTable?: string) =>
-    set({
-      selectedTable,
-      currentPage: 1,
+    set(state => {
+      const sortingColumnName =
+        selectedTable && state.resultTables ? Object.keys(state.resultTables[selectedTable].columns)[0] : undefined;
+
+      return {
+        selectedTable,
+        currentPage: 1,
+        sortingColumnName,
+        isSortingAsc: sortingColumnName ? true : false,
+      };
     }),
 
   setResultTables: (resultTables: Tables) =>
@@ -40,6 +52,14 @@ const useResultsStore = create<State>()(set => ({
   setCurrentRows: (currentRows: Record<string, any>[]) =>
     set({
       currentRows,
+    }),
+
+  setSortingColumnName: (sortingColumnName?: string) =>
+    set(state => {
+      return {
+        isSortingAsc: state.sortingColumnName === sortingColumnName ? !state.isSortingAsc : true,
+        sortingColumnName,
+      };
     }),
 }));
 
