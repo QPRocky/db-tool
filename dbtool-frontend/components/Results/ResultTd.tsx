@@ -32,6 +32,8 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
   const isJsonString = isJson(value);
 
   const onClick = async () => {
+    if (!value) return;
+
     if (isJsonString) {
       setJsonString(value);
       onModalOpen();
@@ -56,6 +58,7 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
 
   const onMouseEnter = async (columnDetails: ColumnDetails) => {
     if (!columnDetails.fkDetails) return;
+    if (!value) return;
 
     const resultTables = await searchByForeignKeyHover({
       referenceTableName: columnDetails.fkDetails.referenceTableName,
@@ -102,7 +105,7 @@ const ResultTd = ({ columnName, columnDetails, value, primaryKeyColumnNamesAndVa
                 </TableContainer>
               }
             >
-              <Text fontSize="xs" color="green.500">
+              <Text fontSize="xs" color={getTextColor(columnDetails, value, isJsonString)}>
                 {formatValue(columnDetails, value)}
               </Text>
             </Tooltip>
